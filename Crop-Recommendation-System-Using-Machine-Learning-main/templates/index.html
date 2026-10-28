@@ -60,7 +60,7 @@
               <a class="nav-link" href="/what-if">What-If Studio ⚡</a>
             </li>
           </ul>
-          <span class="navbar-text text-light small">Phase 3: Explainable AI & Counterfactuals</span>
+          <span class="navbar-text text-light small">Phase 4: Regional & Seasonal Layer (Maharashtra)</span>
         </div>
       </div>
     </nav>
@@ -68,7 +68,7 @@
     <!-- Main Container -->
     <div class="container my-4">
       <h1>AgriWise: Crop Recommendation System <span class="text-success">🌱</span></h1>
-      <p class="text-center text-muted mb-4">Explainable, Climate-Aware Agricultural Decision Support (Phase 3)</p>
+      <p class="text-center text-muted mb-4">Explainable, Climate-Aware & Region-Specific Agricultural Decision Support (Phase 4)</p>
 
       <!-- Error Message Banner -->
       {% if error_message %}
@@ -121,6 +121,32 @@
             <label for="Rainfall" class="form-label">Rainfall <small class="text-muted">(mm, 0 - 1000)</small></label>
             <input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" 
                    value="{{ form_data.Rainfall if form_data else '' }}" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Phase 4: Regional & Seasonal Filter Controls -->
+        <div class="row g-3 mt-3 p-3 bg-light rounded-3 border">
+          <div class="col-12">
+            <span class="badge bg-success mb-1">Phase 4 Feature</span>
+            <span class="fw-bold text-dark ms-1">Maharashtra Regional & Seasonal Alignment (Optional)</span>
+            <p class="small text-muted mb-0">Select a target Maharashtra district and season to evaluate candidates against certified university crop calendars and agro-climatic zones without altering raw ML rankings.</p>
+          </div>
+          <div class="col-md-6">
+            <label for="district" class="form-label fw-semibold">Maharashtra District</label>
+            <select class="form-select" id="district" name="district">
+              <option value="">-- Optional: Select District (All 36 Available) --</option>
+              {% for d in districts %}
+              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="season" class="form-label fw-semibold">Agricultural Season</label>
+            <select class="form-select" id="season" name="season">
+              {% for s in seasons %}
+              <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
 
@@ -216,6 +242,107 @@
             </div>
           </div>
         </div>
+
+        <!-- Phase 4: Regional & Seasonal Viability Section -->
+        {% if regional_assessment %}
+        <div class="mt-5 pt-3">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h4 class="fw-bold text-dark mb-1">📍 Regional & Seasonal Viability Assessment</h4>
+              <p class="text-muted small mb-0">
+                Evaluation for <strong>{{ regional_assessment.district }} District</strong> in <strong>{{ regional_assessment.season }} Season</strong> 
+                against certified Maharashtra university crop calendars.
+              </p>
+            </div>
+            <span class="badge bg-primary px-3 py-2 fs-6">
+              {{ regional_assessment.agro_climatic_zone.zone_id }}: {{ regional_assessment.agro_climatic_zone.zone_name }}
+            </span>
+          </div>
+
+          <!-- Zone Detail Strip -->
+          <div class="card border-0 bg-light p-3 mb-4 rounded-3 shadow-sm">
+            <div class="row text-center g-2 small">
+              <div class="col-md-3">
+                <span class="text-muted d-block">Annual Normal Rainfall:</span>
+                <strong>{{ regional_assessment.agro_climatic_zone.annual_normal_rainfall_mm }} mm</strong>
+              </div>
+              <div class="col-md-3">
+                <span class="text-muted d-block">Rainfall Range:</span>
+                <strong>{{ regional_assessment.agro_climatic_zone.rainfall_range_mm[0] }} - {{ regional_assessment.agro_climatic_zone.rainfall_range_mm[1] }} mm</strong>
+              </div>
+              <div class="col-md-3">
+                <span class="text-muted d-block">Dominant Soil Types:</span>
+                <strong>{{ regional_assessment.agro_climatic_zone.dominant_soils | join(', ') }}</strong>
+              </div>
+              <div class="col-md-3">
+                <span class="text-muted d-block">Extension University:</span>
+                <strong>{{ regional_assessment.agro_climatic_zone.university }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagnostic Summary Alert -->
+          <div class="alert {% if 'Consensus' in regional_assessment.diagnostic_summary %}alert-success{% else %}alert-warning{% endif %} d-flex align-items-center mb-4" role="alert">
+            <div class="fs-4 me-3">{% if 'Consensus' in regional_assessment.diagnostic_summary %}✅{% else %}⚠️{% endif %}</div>
+            <div>
+              <strong>Agronomic Synthesis:</strong> {{ regional_assessment.diagnostic_summary }}
+            </div>
+          </div>
+
+          <!-- Detailed Candidate Feasibility Table -->
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold">
+              Candidate Crops: Non-Destructive Regional Feasibility Analysis
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light small">
+                    <tr>
+                      <th>ML Rank</th>
+                      <th>Crop</th>
+                      <th>Raw ML Score</th>
+                      <th>Regional Feasibility Status</th>
+                      <th>Certified Sowing Window</th>
+                      <th>Agronomic Rationale & Literature Source</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in regional_assessment.regional_assessments %}
+                    <tr>
+                      <td class="fw-bold">#{{ item.ml_rank }}</td>
+                      <td class="fw-semibold">{{ item.crop_name }}</td>
+                      <td>
+                        <span class="badge bg-light text-dark border">{{ item.model_confidence_score }}%</span>
+                      </td>
+                      <td>
+                        {% if item.regional_status == 'Cultivable & In-Season' %}
+                          <span class="badge bg-success">Cultivable & In-Season</span>
+                        {% elif item.regional_status == 'Cultivable but Off-Season' %}
+                          <span class="badge bg-warning text-dark">Cultivable but Off-Season</span>
+                        {% elif item.regional_status == 'Agronomically Incompatible / Climatically Unsuited' %}
+                          <span class="badge bg-danger">Incompatible / Unsuited</span>
+                        {% else %}
+                          <span class="badge bg-secondary">Insufficient Evidence</span>
+                        {% endif %}
+                      </td>
+                      <td class="small">{{ item.sowing_window }}</td>
+                      <td class="small text-muted" style="max-width: 420px;">
+                        {{ item.rationale }}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 mt-3 disclaimer-box rounded">
+            <strong>📌 Regional Notice:</strong> {{ regional_assessment.disclaimer }}
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Explainable AI (SHAP) Section -->
         {% if explanation %}

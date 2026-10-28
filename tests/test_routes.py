@@ -139,3 +139,78 @@ def test_whatif_post_route_invalid_bounds(client):
     html = response.data.decode("utf-8")
     assert "Simulation Error" in html
     assert "outside acceptable range" in html
+
+
+def test_predict_route_with_maharashtra_district(client):
+    """Verifies that submitting with district and season renders the regional decision layer."""
+    data = {
+        "Nitrogen": "90",
+        "Phosporus": "42",
+        "Potassium": "43",
+        "Temperature": "20.87",
+        "Humidity": "82.0",
+        "Ph": "6.5",
+        "Rainfall": "202.93",
+        "district": "Ratnagiri",
+        "season": "Kharif"
+    }
+    response = client.post("/predict", data=data)
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "Regional &amp; Seasonal Viability Assessment" in html or "Regional & Seasonal Viability Assessment" in html
+    assert "Ratnagiri District" in html
+    assert "Kharif Season" in html
+    assert "MH-Z1: South Konkan Coastal Zone" in html
+    assert "Cultivable &amp; In-Season" in html or "Cultivable & In-Season" in html
+    assert "Non-Destructive Regional Feasibility Analysis" in html
+
+
+def test_predict_route_with_apple_incompatible_flagged(client):
+    """Verifies that climatically incompatible candidates receive red badge while raw ML is preserved."""
+    apple_data = {
+        "Nitrogen": "20",
+        "Phosporus": "135",
+        "Potassium": "198",
+        "Temperature": "22.0",
+        "Humidity": "92.0",
+        "Ph": "5.8",
+        "Rainfall": "110.0",
+        "district": "Solapur",
+        "season": "Kharif"
+    }
+    response = client.post("/predict", data=apple_data)
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "Solapur District" in html
+    assert "Incompatible / Unsuited" in html
+    assert "Solapur" in html
+    # Raw ML scores should still be visible in the candidate table
+    assert "Top Candidate Crops" in html
+
+
+def test_whatif_post_route_with_regional_context(client):
+    """Verifies that What-If simulation with district renders regional viability shift."""
+    sim_data = {
+        "base_Nitrogen": "90",
+        "base_Phosporus": "42",
+        "base_Potassium": "43",
+        "base_Temperature": "20.87",
+        "base_Humidity": "82.00",
+        "base_Ph": "6.50",
+        "base_Rainfall": "202.93",
+        "mod_Nitrogen": "90",
+        "mod_Phosporus": "42",
+        "mod_Potassium": "43",
+        "mod_Temperature": "20.87",
+        "mod_Humidity": "82.00",
+        "mod_Ph": "6.50",
+        "mod_Rainfall": "50.00",
+        "district": "Kolhapur",
+        "season": "Kharif"
+    }
+    response = client.post("/what-if", data=sim_data)
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "Regional Viability Response" in html
+    assert "Kolhapur" in html
+

@@ -47,7 +47,7 @@
               <a class="nav-link active" href="/what-if">What-If Studio</a>
             </li>
           </ul>
-          <span class="navbar-text small text-light">Phase 3: Explainable AI & Counterfactuals</span>
+          <span class="navbar-text small text-light">Phase 4: Regional & Seasonal Layer (Maharashtra)</span>
         </div>
       </div>
     </nav>
@@ -150,6 +150,32 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Phase 4: Regional Context for What-If Analysis -->
+        <div class="row g-3 mt-3 p-3 bg-white rounded-3 border">
+          <div class="col-12">
+            <span class="badge bg-success mb-1">Phase 4 Feature</span>
+            <span class="fw-bold text-dark ms-1">Maharashtra Regional Context (Optional)</span>
+            <p class="small text-muted mb-0">Evaluate how your What-If simulation candidates align with certified agro-climatic zones and sowing windows in Maharashtra.</p>
+          </div>
+          <div class="col-md-6">
+            <label for="district" class="form-label small fw-bold">Maharashtra District</label>
+            <select class="form-select" id="district" name="district">
+              <option value="">-- Optional: Select District (All 36 Available) --</option>
+              {% for d in districts %}
+              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="season" class="form-label small fw-bold">Agricultural Season</label>
+            <select class="form-select" id="season" name="season">
+              {% for s in seasons %}
+              <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
 
@@ -260,6 +286,40 @@
             </table>
           </div>
         </div>
+
+        <!-- Regional Viability Shift for What-If (if selected) -->
+        {% if base_regional and mod_regional %}
+        <div class="card-box mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold mb-0">📍 Regional Viability Response ({{ base_regional.district }} - {{ base_regional.season }})</h5>
+            <span class="badge bg-primary">{{ base_regional.agro_climatic_zone.zone_id }}: {{ base_regional.agro_climatic_zone.zone_name }}</span>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-light">
+                <span class="small text-muted fw-bold d-block">Baseline Scenario Status:</span>
+                <h6 class="fw-bold text-dark mt-1">{{ simulation_result.base_prediction.primary_recommendation.crop_name }}</h6>
+                {% set base_eval = base_regional.regional_assessments[0] %}
+                <span class="badge {% if base_eval.regional_status == 'Cultivable & In-Season' %}bg-success{% elif base_eval.regional_status == 'Cultivable but Off-Season' %}bg-warning text-dark{% else %}bg-danger{% endif %} mb-2">
+                  {{ base_eval.regional_status }}
+                </span>
+                <p class="small text-muted mb-0">{{ base_eval.rationale }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-light">
+                <span class="small text-muted fw-bold d-block">Simulated Scenario Status:</span>
+                <h6 class="fw-bold text-dark mt-1">{{ simulation_result.modified_prediction.primary_recommendation.crop_name }}</h6>
+                {% set mod_eval = mod_regional.regional_assessments[0] %}
+                <span class="badge {% if mod_eval.regional_status == 'Cultivable & In-Season' %}bg-success{% elif mod_eval.regional_status == 'Cultivable but Off-Season' %}bg-warning text-dark{% else %}bg-danger{% endif %} mb-2">
+                  {{ mod_eval.regional_status }}
+                </span>
+                <p class="small text-muted mb-0">{{ mod_eval.rationale }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Scientific Guardrail -->
         <div class="p-3 disclaimer-callout rounded">
