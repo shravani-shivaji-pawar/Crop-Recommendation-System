@@ -1,24 +1,39 @@
 # AgriWise: Explainable, Climate-Aware & Region-Specific AI Agricultural Decision Support System
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
-[![Status: Phase 2 Hardened](https://img.shields.io/badge/Status-Phase%202%20Hardened-brightgreen.svg)]()
-[![Tests: 21 Passed](https://img.shields.io/badge/Tests-21%20Passed-success.svg)]()
+[![Status: Phase 3 Completed](https://img.shields.io/badge/Status-Phase%203%20Completed-brightgreen.svg)]()
+[![Tests: 31 Passed](https://img.shields.io/badge/Tests-31%20Passed-success.svg)]()
+[![Explainability: TreeSHAP](https://img.shields.io/badge/XAI-TreeSHAP-orange.svg)]()
 [![License: Academic / Open](https://img.shields.io/badge/License-Academic-lightgrey.svg)]()
 
 **AgriWise** is an explainable, climate-aware, and region-specific agricultural decision support system designed to evolve conventional single-crop classifiers into a scientifically grounded, multi-criteria recommendation platform.
 
 ---
 
-## 1. Phase 2 Status & Key Enhancements
+## 1. Project Evolution & Phases
 
-- **Critical Scaler Fix:** Eliminated the legacy scaling pipeline bug that previously caused live application accuracy to collapse to 5.91%. Restored empirical held-out accuracy to **99.77%**.
-- **Hardened Machine Learning Package (`src/ml`):**
-  - [`AgriDataPreprocessor`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/preprocessor.py): Strict data integrity, train-only scaling, and immutable transformation.
-  - [`CropPredictor`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/predictor.py): Top-5 candidate crop ranking with calibrated confidence bands and explicit scientific disclaimers.
-  - [`train_production_model`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/train.py): Deterministic, reproducible training harness (`random_state=42`).
-- **Input Validation:** Agronomic range validation (e.g. soil pH between 3.0 and 11.0, non-negative rainfall) and alias matching (`P`, `Phosphorus`, `Phosporus`).
-- **Automated Test Suite:** 21 unit, integration, and regression tests ensuring zero pipeline regression.
-- **Legacy Artifact Preservation:** Original model and notebook files safely preserved in `legacy/` for academic baseline comparison.
+### Phase 1: Project Audit & Baseline Evaluation (Completed)
+- Uncovered legacy scaler overwrite bug that caused live application accuracy to collapse to 5.91%.
+- Preserved legacy files in [`legacy/`](file:///s:/MCA%202%20Mini%20project/crop/legacy) for academic before-and-after baseline comparison.
+- Formulated research questions, architecture, and dataset specifications.
+
+### Phase 2: Pipeline Rectification & Top-5 Engine (Completed)
+- Rectified scaling pipeline in [`src/ml/preprocessor.py`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/preprocessor.py) (train-only scaling, immutable transformations, strict input bounds).
+- Restored held-out test accuracy from **6.14%** to **99.77%**.
+- Implemented Top-5 candidate crop ranking with calibrated confidence bands and explicit scientific disclaimers in [`src/ml/predictor.py`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/predictor.py).
+
+### Phase 3: Explainable AI & What-If Simulation Studio (Completed)
+- **TreeSHAP Feature Attribution ([`src/xai/explainer.py`](file:///s:/MCA%202%20Mini%20project/crop/src/xai/explainer.py)):**
+  - Exact Shapley values decomposing model output probabilities into positive drivers and limiting constraints.
+  - Pairwise contrastive explanations (e.g. *Why was Rice chosen over Maize?* identifying decisive differential features).
+  - Strict distinction between statistical feature attribution and biological causality.
+- **Interactive What-If Studio ([`src/xai/counterfactual.py`](file:///s:/MCA%202%20Mini%20project/crop/src/xai/counterfactual.py)):**
+  - Side-by-side simulation comparing baseline vs. perturbed soil/weather scenarios.
+  - Environmental parameter delta tracking ($\Delta x_i$ and $\%$ shift).
+  - Top-5 candidate rank shift tracker (gained rank, dropped rank, entered/exited Top-5).
+  - Explicit sensitivity guardrails preventing simulated outputs from being interpreted as guaranteed physical yields.
+- **Verification & Methodology Document ([`VERIFICATION_AND_METHODOLOGY.md`](file:///s:/MCA%202%20Mini%20project/crop/VERIFICATION_AND_METHODOLOGY.md)):**
+  - Exact mathematical formulas for ensemble voting, probability averaging, confidence band derivations, proof of zero data leakage, and academic limitations of the 99.77% score.
 
 ---
 
@@ -40,7 +55,8 @@ s:\MCA 2 Mini project\crop\
 ├── DATASET_REQUIREMENTS.md       # Integration specifications for future secondary datasets
 ├── RESEARCH_PLAN.md              # Academic problem statement, research questions, ablation studies
 ├── IMPLEMENTATION_ROADMAP.md     # 7-phase implementation strategy
-├── requirements.txt              # Pinned CPU-compatible dependencies
+├── VERIFICATION_AND_METHODOLOGY.md # Mathematical formulation & evaluation proof
+├── requirements.txt              # Pinned CPU-compatible dependencies (including shap)
 │
 ├── legacy/                       # Safely preserved original codebase and model artifacts
 │   ├── app.py
@@ -56,26 +72,30 @@ s:\MCA 2 Mini project\crop\
 │   ├── core/                     # Configuration, bounds, and custom exceptions
 │   │   ├── config.py
 │   │   └── exceptions.py
-│   └── ml/                       # Hardened Machine Learning package
-│       ├── preprocessor.py       # AgriDataPreprocessor
-│       ├── predictor.py          # CropPredictor (Top-5 recommendation engine)
-│       ├── train.py              # Reproducible training pipeline
-│       ├── evaluate.py           # Pipeline evaluation suite
-│       └── artifacts/            # Serialized production models & scalers
-│           ├── best_model.pkl
-│           ├── scaler.pkl
-│           └── metadata.json
+│   ├── ml/                       # Hardened Machine Learning package
+│   │   ├── preprocessor.py       # AgriDataPreprocessor
+│   │   ├── predictor.py          # CropPredictor (Top-5 recommendation engine)
+│   │   ├── train.py              # Reproducible training pipeline
+│   │   ├── evaluate.py           # Pipeline evaluation suite
+│   │   └── artifacts/            # Serialized production models & scalers
+│   └── xai/                      # Explainable AI & Simulation package
+│       ├── explainer.py          # AgriExplainer (TreeSHAP feature attributions)
+│       └── counterfactual.py     # WhatIfSimulator (Interactive perturbation studio)
 │
-├── tests/                        # Automated unit and regression test suite
+├── tests/                        # Automated unit and regression test suite (31 tests)
 │   ├── test_preprocessor.py      # Preprocessing, validation, and immutability tests
 │   ├── test_predictor.py         # Top-K candidate ranking and confidence tests
+│   ├── test_explainer.py         # TreeSHAP feature attribution & contrastive tests
+│   ├── test_whatif.py            # What-If simulation & delta calculation tests
 │   ├── test_regression.py        # Regression tests against legacy scaling bug
-│   └── test_routes.py            # Flask route integration tests
+│   └── test_routes.py            # Flask route integration tests (/predict, /what-if)
 │
-└── Crop-Recommendation-System-Using-Machine-Learning-main/  # Working Flask UI
-    ├── app.py                    # Connected to hardened CropPredictor
+└── Crop-Recommendation-System-Using-Machine-Learning-main/  # Web Application
+    ├── app.py                    # Connected to CropPredictor, AgriExplainer, WhatIfSimulator
     ├── static/img.jpg            # Static demonstration image
-    └── templates/index.html      # Responsive UI with validation alerts & Top-5 ranking
+    └── templates/
+        ├── index.html            # Main UI with TreeSHAP waterfall & contrastive analysis
+        └── what_if.html          # Interactive What-If Simulation Studio
 ```
 
 ---
@@ -101,11 +121,12 @@ pip install -r requirements.txt
 ```powershell
 python -m pytest tests -v
 ```
-*(All 21 tests should pass in under 5 seconds)*
+*(All 31 tests should pass in under 5 seconds)*
 
 ### Step 4: Run the Web Application
 ```powershell
 cd Crop-Recommendation-System-Using-Machine-Learning-main
 python app.py
 ```
-Access the application in your browser at: **`http://localhost:5000`**
+- Main Recommendation & SHAP Explanations: **`http://localhost:5000`**
+- Interactive What-If Simulation Studio: **`http://localhost:5000/what-if`**
