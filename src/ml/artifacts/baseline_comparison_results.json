@@ -1,0 +1,17 @@
+{
+  "rectified_production_pipeline": {
+    "test_accuracy": 99.77,
+    "macro_precision": 99.78,
+    "macro_recall": 99.77,
+    "macro_f1": 99.77,
+    "status": "PASS - High Integrity"
+  },
+  "legacy_pipeline": {
+    "test_accuracy": 6.14,
+    "macro_precision": 5.09,
+    "macro_recall": 6.14,
+    "macro_f1": 2.5,
+    "status": "FAILED - Severe Scaler Bug",
+    "notes": "Feature inputs to trees are out of bounds due to single-sample fitted scaler."
+  }
+}

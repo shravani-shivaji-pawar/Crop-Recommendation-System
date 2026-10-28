@@ -3,129 +3,223 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>AgriWise: Crop Recommendation & Decision Support</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <style>
+      h1 {
+        color: #2d6a4f;
+        text-align: center;
+        font-weight: 700;
+      }
+      .container {
+        background: #ffffff;
+        font-weight: 500;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      }
+      .badge-high {
+        background-color: #2d6a4f;
+        color: white;
+      }
+      .badge-moderate {
+        background-color: #d97706;
+        color: white;
+      }
+      .badge-low {
+        background-color: #6b7280;
+        color: white;
+      }
+      .primary-card {
+        background-color: #1b4332;
+        color: white;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .disclaimer-box {
+        background-color: #f8fafc;
+        border-left: 4px solid #2d6a4f;
+        font-size: 0.88rem;
+        color: #475569;
+      }
+    </style>
   </head>
-  <style>
-		h1 {
-			color: mediumseagreen;
-			text-align: center;
-		}
+  <body style="background: #edf2f7; min-height: 100vh;">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">🌱 AgriWise Crop System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#recommendationSection">Recommendations</a>
+            </li>
+          </ul>
+          <span class="navbar-text text-light small">Phase 2: Hardened ML & Top-5 Engine</span>
+        </div>
+      </div>
+    </nav>
 
-		.warning {
-			color: red;
-			font-weight: bold;
-			text-align: center;
-		}
-		.card{
-		margin-left:410px;
-		margin-top: 20px;
-		color: white;
-		}
-		.container{
-		background:#edf2f7;
-		font-weight: bold;
-		padding-bottom:10px;
-		border-radius: 15px;
-		}
-	</style>
+    <!-- Main Container -->
+    <div class="container my-4">
+      <h1>AgriWise: Crop Recommendation System <span class="text-success">🌱</span></h1>
+      <p class="text-center text-muted mb-4">Explainable, Climate-Aware Agricultural Decision Support (Phase 2)</p>
 
+      <!-- Error Message Banner -->
+      {% if error_message %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>⚠️ Input Validation Error:</strong> {{ error_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endif %}
 
-
-
-  <body style="background:#BCBBB8">
-  <!--=======================navbar=====================================================-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">Crop Recommendation</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">About</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
-
-<!--==========================================================================================-->
-  <div class="container my-3 mt-3">
-      <h1 class="text-success">Crop Recommendation System <span class="text-success">🌱</span></h1>
-
-<!--      adding form-->
+      <!-- Input Form -->
       <form action="/predict" method="POST">
-          <div class="row">
-              <div class="col-md-4">
-					<label for="Nitrogen">Nitrogen</label>
-					<input type="number" id="Nitrogen" name="Nitrogen" placeholder="Enter Nitrogen" class="form-control" required step="0">
-				</div>
-               <div class="col-md-4">
-					<label for="Phosporus">Phosphorus</label>
-					<input type="number" id="Phosporus" name="Phosporus" placeholder="Enter Phosphorus" class="form-control" required step="00">
-				</div>
-				<div class="col-md-4">
-					<label for="Potassium">Potassium</label>
-					<input type="number" id="Potassium" name="Potassium" placeholder="Enter Potassium" class="form-control" required step="0">
-				</div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="Nitrogen" class="form-label">Nitrogen (N) <small class="text-muted">(0 - 200)</small></label>
+            <input type="number" step="any" id="Nitrogen" name="Nitrogen" placeholder="e.g. 90" 
+                   value="{{ form_data.Nitrogen if form_data else '' }}" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="Phosporus" class="form-label">Phosphorus (P) <small class="text-muted">(0 - 200)</small></label>
+            <input type="number" step="any" id="Phosporus" name="Phosporus" placeholder="e.g. 42" 
+                   value="{{ form_data.Phosporus if form_data else '' }}" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="Potassium" class="form-label">Potassium (K) <small class="text-muted">(0 - 300)</small></label>
+            <input type="number" step="any" id="Potassium" name="Potassium" placeholder="e.g. 43" 
+                   value="{{ form_data.Potassium if form_data else '' }}" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <label for="Temperature" class="form-label">Temperature <small class="text-muted">(°C, 0 - 60)</small></label>
+            <input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="e.g. 20.87" 
+                   value="{{ form_data.Temperature if form_data else '' }}" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="Humidity" class="form-label">Humidity <small class="text-muted">(%, 0 - 100)</small></label>
+            <input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="e.g. 82.0" 
+                   value="{{ form_data.Humidity if form_data else '' }}" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="Ph" class="form-label">Soil pH <small class="text-muted">(3.0 - 11.0)</small></label>
+            <input type="number" step="0.01" id="Ph" name="Ph" placeholder="e.g. 6.5" 
+                   value="{{ form_data.Ph if form_data else '' }}" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <label for="Rainfall" class="form-label">Rainfall <small class="text-muted">(mm, 0 - 1000)</small></label>
+            <input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" 
+                   value="{{ form_data.Rainfall if form_data else '' }}" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-12 text-center">
+            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">Get Recommendation</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Results Section -->
+      {% if result %}
+      <div id="recommendationSection" class="mt-5 pt-3 border-top">
+        <h3 class="text-success mb-4 text-center">Agricultural Recommendation Analysis</h3>
+
+        <div class="row g-4 justify-content-center">
+          <!-- Primary Recommendation Card -->
+          <div class="col-lg-4 col-md-5">
+            <div class="card primary-card shadow h-100">
+              <img src="{{ url_for('static', filename='img.jpg') }}" class="card-img-top" alt="Crop Image" style="height: 180px; object-fit: cover;">
+              <div class="card-body">
+                <span class="badge bg-light text-success mb-2">Rank #1 Match</span>
+                <h4 class="card-title fw-bold text-white">{{ primary.crop_name if primary else result }}</h4>
+                <p class="card-text text-light small">{{ result }}</p>
+                {% if primary %}
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary">
+                  <span>Model Confidence:</span>
+                  <span class="fs-5 fw-bold text-warning">{{ primary.model_confidence_score }}%</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                  <span>Confidence Level:</span>
+                  <span class="badge badge-high">{{ primary.confidence_level }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
           </div>
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Temperature">Temperature</label>
-					<input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="Enter Temperature in °C" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="Humidity">Humidity</label>
-					<input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="Enter Humidity in %" class="form-control" required step="0">
-				</div>
-				<div class="col-md-4">
-					<label for="pH">pH</label>
-					<input type="number" step="0.01" id="Ph" name="Ph" placeholder="Enter pH value" class="form-control" required step="0">
-				</div>
-			</div>
+          <!-- Top-5 Candidate Ranking Table -->
+          <div class="col-lg-8 col-md-7">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-header bg-dark text-white fw-bold">
+                Top Candidate Crops (Ranked by Model Proximity)
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                      <tr>
+                        <th>Rank</th>
+                        <th>Crop</th>
+                        <th>Model Confidence</th>
+                        <th>Alignment</th>
+                        <th>Agronomic Explanation</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for cand in top_candidates %}
+                      <tr {% if cand.rank == 1 %}class="table-success fw-bold"{% endif %}>
+                        <td>#{{ cand.rank }}</td>
+                        <td>{{ cand.crop_name }}</td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <span class="me-2" style="min-width: 45px;">{{ cand.model_confidence_score }}%</span>
+                            <div class="progress flex-grow-1" style="height: 6px;">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ cand.model_confidence_score }}%"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          {% if cand.confidence_level == 'High' %}
+                            <span class="badge badge-high">High</span>
+                          {% elif cand.confidence_level == 'Moderate' %}
+                            <span class="badge badge-moderate">Moderate</span>
+                          {% else %}
+                            <span class="badge badge-low">Low</span>
+                          {% endif %}
+                        </td>
+                        <td class="small text-muted">{{ cand.explanation }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <div class="row mt-4">
-				<div class="col-md-4">
-					<label for="Rainfall">Rainfall</label>
-					<input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="Enter Rainfall in mm" class="form-control" required>
-				</div>
-			</div>
-
-
-
-           <div class="row mt-4">
-
-           <div class="col-md-12 text-center">
-				<button type="submit" class="btn btn-primary btn-lg">Get Recommendation</button>
-			</div>
-			</div>
-      </form>
-
-
-
-       {% if result %}
-		<div class="card bg-dark" style="width: 18rem;">
-		  <img src="{{url_for('static', filename='img.jpg')}}" class="card-img-top" alt="...">
-		  <div class="card-body">
-			<h5 class="card-title">Recommend Crop for cultivation is:</h5>
-			<p class="card-text">{{ result }}</p>
-		  </div>
-		</div>
-	   {% endif %}
-  </div>
+        <!-- Scientific Disclaimer Alert -->
+        {% if disclaimer %}
+        <div class="p-3 my-4 disclaimer-box rounded">
+          <strong>🔬 Academic & Scientific Note:</strong> {{ disclaimer }}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
   </body>

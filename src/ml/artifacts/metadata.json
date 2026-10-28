@@ -1,0 +1,23 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 100,
+  "random_state": 42,
+  "train_samples": 1760,
+  "test_samples": 440,
+  "num_classes": 22,
+  "test_accuracy": 0.9977272727272727,
+  "test_precision_macro": 0.9978354978354979,
+  "test_recall_macro": 0.9977272727272727,
+  "test_f1_macro": 0.997725851384388,
+  "training_duration_ms": 222.58,
+  "trained_at": "2026-10-28T22:51:53.671427",
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ]
+}
