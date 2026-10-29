@@ -1,39 +1,33 @@
-# AgriWise: Explainable, Climate-Aware & Region-Specific AI Agricultural Decision Support System
+# AgriWise: An Explainable, Climate-Aware & Region-Specific AI Agricultural Decision Support System
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
-[![Status: Phase 3 Completed](https://img.shields.io/badge/Status-Phase%203%20Completed-brightgreen.svg)]()
-[![Tests: 31 Passed](https://img.shields.io/badge/Tests-31%20Passed-success.svg)]()
+[![Status: Phase 7 Completed](https://img.shields.io/badge/Status-Phase%207%20Completed-brightgreen.svg)]()
+[![Tests: 52 Passed](https://img.shields.io/badge/Tests-52%20Passed-success.svg)]()
 [![Explainability: TreeSHAP](https://img.shields.io/badge/XAI-TreeSHAP-orange.svg)]()
 [![License: Academic / Open](https://img.shields.io/badge/License-Academic-lightgrey.svg)]()
 
-**AgriWise** is an explainable, climate-aware, and region-specific agricultural decision support system designed to evolve conventional single-crop classifiers into a scientifically grounded, multi-criteria recommendation platform.
+**AgriWise** is an explainable, climate-aware, and region-specific agricultural decision support system designed to upgrade conventional single-crop classifiers into a scientifically grounded, multi-criteria recommendation platform.
 
 ---
 
-## 1. Project Evolution & Phases
+## 1. Project Overview & Evolution
 
-### Phase 1: Project Audit & Baseline Evaluation (Completed)
-- Uncovered legacy scaler overwrite bug that caused live application accuracy to collapse to 5.91%.
-- Preserved legacy files in [`legacy/`](file:///s:/MCA%202%20Mini%20project/crop/legacy) for academic before-and-after baseline comparison.
-- Formulated research questions, architecture, and dataset specifications.
+AgriWise transforms a legacy, black-box crop classification script into a publication-grade decision support platform:
 
-### Phase 2: Pipeline Rectification & Top-5 Engine (Completed)
-- Rectified scaling pipeline in [`src/ml/preprocessor.py`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/preprocessor.py) (train-only scaling, immutable transformations, strict input bounds).
-- Restored held-out test accuracy from **6.14%** to **99.77%**.
-- Implemented Top-5 candidate crop ranking with calibrated confidence bands and explicit scientific disclaimers in [`src/ml/predictor.py`](file:///s:/MCA%202%20Mini%20project/crop/src/ml/predictor.py).
-
-### Phase 3: Explainable AI & What-If Simulation Studio (Completed)
-- **TreeSHAP Feature Attribution ([`src/xai/explainer.py`](file:///s:/MCA%202%20Mini%20project/crop/src/xai/explainer.py)):**
-  - Exact Shapley values decomposing model output probabilities into positive drivers and limiting constraints.
-  - Pairwise contrastive explanations (e.g. *Why was Rice chosen over Maize?* identifying decisive differential features).
-  - Strict distinction between statistical feature attribution and biological causality.
-- **Interactive What-If Studio ([`src/xai/counterfactual.py`](file:///s:/MCA%202%20Mini%20project/crop/src/xai/counterfactual.py)):**
-  - Side-by-side simulation comparing baseline vs. perturbed soil/weather scenarios.
-  - Environmental parameter delta tracking ($\Delta x_i$ and $\%$ shift).
-  - Top-5 candidate rank shift tracker (gained rank, dropped rank, entered/exited Top-5).
-  - Explicit sensitivity guardrails preventing simulated outputs from being interpreted as guaranteed physical yields.
-- **Verification & Methodology Document ([`VERIFICATION_AND_METHODOLOGY.md`](file:///s:/MCA%202%20Mini%20project/crop/VERIFICATION_AND_METHODOLOGY.md)):**
-  - Exact mathematical formulas for ensemble voting, probability averaging, confidence band derivations, proof of zero data leakage, and academic limitations of the 99.77% score.
+- **Phase 1: Project Audit & Baseline Evaluation**  
+  Uncovered a critical data leakage and scaler overwrite bug that caused live prediction accuracy to collapse to 6.14%. Legacy artifacts safely preserved in [`legacy/`](file:///s:/MCA%202%20Mini%20project/crop/legacy).
+- **Phase 2: Pipeline Rectification & Top-5 Engine**  
+  Restored held-out benchmark accuracy to **99.77%** with an immutable preprocessing pipeline and multi-candidate Top-5 ranking engine with calibrated confidence bands.
+- **Phase 3: Explainable AI & What-If Studio**  
+  Integrated exact TreeSHAP feature attributions, pairwise contrastive explanations (*Why Crop A over Crop B?*), and an interactive counterfactual What-If simulation studio.
+- **Phase 4: Regional & Seasonal Decision Layer (Maharashtra)**  
+  Formulated an agro-climatic decision engine mapping 22 crops across 36 districts and 9 agro-climatic zones, intercepting unviable crops while preserving in-season candidates.
+- **Phase 5: Modern UI Dashboard Upgrade**  
+  Implemented a responsive, accessible vanilla CSS interface with agro-climatic presets, waterfall factor charts, and contrastive comparison cards.
+- **Phase 6: Verified Secondary Dataset Integration**  
+  Ingested 18 years of historical crop production statistics (APS/DES, 12,628 rows) and district rainfall normals (IMD Pune) as decoupled contextual overlays.
+- **Phase 7: Research Paper & Final Packaging**  
+  Authored academic manuscript draft ([`AGRIWISE_RESEARCH_PAPER.md`](file:///s:/MCA%202%20Mini%20project/crop/AGRIWISE_RESEARCH_PAPER.md)) and final project report ([`PROJECT_FINAL_REPORT.md`](file:///s:/MCA%202%20Mini%20project/crop/PROJECT_FINAL_REPORT.md)).
 
 ---
 
@@ -41,8 +35,10 @@
 
 | Pipeline Version | Held-Out Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score | Status |
 |---|---|---|---|---|---|
-| **Legacy Pipeline** (`legacy/minmaxscaler.pkl` + `legacy/standscaler.pkl`) | **6.14%** | 5.09% | 6.14% | 2.50% | **FAILED** (Severe Scaler Overwrite Bug) |
+| **Legacy Pipeline** (`legacy/minmaxscaler.pkl` + `legacy/standscaler.pkl`) | **6.14%** | 5.09% | 6.14% | 2.50% | **FAILED** (Catastrophic Scaler Overwrite) |
 | **AgriWise Rectified Pipeline** (`src/ml/artifacts/scaler.pkl`) | **99.77%** | **99.78%** | **99.77%** | **99.77%** | **PASSED** (High Integrity) |
+
+> **Scientific Disclaimer:** The 99.77% accuracy is a held-out benchmark on the 2,200-sample dataset. It measures pattern separation in synthetic feature space and does not constitute a guarantee of real-world biological yield or farming success.
 
 ---
 
@@ -50,52 +46,68 @@
 
 ```
 s:\MCA 2 Mini project\crop\
-├── PROJECT_AUDIT.md              # Technical audit of legacy codebase & baseline benchmarks
-├── PROPOSED_ARCHITECTURE.md     # Multi-module AgriWise architectural specification
-├── DATASET_REQUIREMENTS.md       # Integration specifications for future secondary datasets
-├── RESEARCH_PLAN.md              # Academic problem statement, research questions, ablation studies
-├── IMPLEMENTATION_ROADMAP.md     # 7-phase implementation strategy
-├── VERIFICATION_AND_METHODOLOGY.md # Mathematical formulation & evaluation proof
-├── requirements.txt              # Pinned CPU-compatible dependencies (including shap)
+├── AGRIWISE_RESEARCH_PAPER.md        # Academic research paper draft (16 sections)
+├── PROJECT_FINAL_REPORT.md           # Comprehensive major project documentation
+├── PROJECT_AUDIT.md                  # Phase 1 technical audit of legacy codebase
+├── PROPOSED_ARCHITECTURE.md         # Multi-module architectural design specification
+├── DATASET_REQUIREMENTS.md           # Secondary dataset integration rules
+├── RESEARCH_PLAN.md                  # Research questions & experimental design
+├── IMPLEMENTATION_ROADMAP.md         # Multi-phase milestone tracking
+├── VERIFICATION_AND_METHODOLOGY.md   # Mathematical formulations & leakage proofs
+├── requirements.txt                  # Pinned CPU-compatible dependencies
+├── .env.example                      # Clean environment template (no credentials)
 │
-├── legacy/                       # Safely preserved original codebase and model artifacts
+├── legacy/                           # Preserved original codebase and model artifacts
 │   ├── app.py
 │   ├── model.pkl
 │   ├── minmaxscaler.pkl
 │   ├── standscaler.pkl
 │   └── Crop_recommendation.csv
 │
-├── data/raw/
-│   └── Crop_recommendation.csv   # Pristine 2,200-sample benchmark dataset
+├── data/
+│   ├── raw/
+│   │   ├── Crop_recommendation.csv                    # Primary 2,200-sample ML dataset
+│   │   ├── maharashtra_crop_production_des_raw.csv    # Secondary DES historical dataset
+│   │   └── maharashtra_district_rainfall_normals_imd.csv # Secondary IMD rainfall normals
+│   └── DATASET_MANIFEST.md           # Provenance, schema, and licensing catalog
 │
 ├── src/
-│   ├── core/                     # Configuration, bounds, and custom exceptions
+│   ├── core/                         # Configuration, bounds, and domain exceptions
 │   │   ├── config.py
 │   │   └── exceptions.py
-│   ├── ml/                       # Hardened Machine Learning package
-│   │   ├── preprocessor.py       # AgriDataPreprocessor
-│   │   ├── predictor.py          # CropPredictor (Top-5 recommendation engine)
-│   │   ├── train.py              # Reproducible training pipeline
-│   │   ├── evaluate.py           # Pipeline evaluation suite
-│   │   └── artifacts/            # Serialized production models & scalers
-│   └── xai/                      # Explainable AI & Simulation package
-│       ├── explainer.py          # AgriExplainer (TreeSHAP feature attributions)
-│       └── counterfactual.py     # WhatIfSimulator (Interactive perturbation studio)
+│   ├── ml/                           # Hardened Machine Learning package
+│   │   ├── preprocessor.py           # AgriDataPreprocessor (train-only scaling)
+│   │   ├── predictor.py              # CropPredictor (Top-5 candidate ranking engine)
+│   │   ├── train.py                  # Reproducible training pipeline
+│   │   ├── evaluate.py               # Pipeline evaluation suite
+│   │   └── artifacts/                # Validated production model & scaler artifacts
+│   ├── xai/                          # Explainability & Simulation package
+│   │   ├── explainer.py              # AgriExplainer (TreeSHAP & contrastive analysis)
+│   │   └── counterfactual.py         # WhatIfSimulator (Interactive perturbation studio)
+│   └── modules/
+│       └── regional/                 # Regional & Seasonal Decision Layer
+│           ├── regional_filter.py    # RegionalConstraintEngine (Maharashtra rules)
+│           ├── secondary_data.py     # Repositories for DES & IMD datasets
+│           └── evaluator.py          # 72-query diagnostic suite runner
 │
-├── tests/                        # Automated unit and regression test suite (31 tests)
-│   ├── test_preprocessor.py      # Preprocessing, validation, and immutability tests
-│   ├── test_predictor.py         # Top-K candidate ranking and confidence tests
-│   ├── test_explainer.py         # TreeSHAP feature attribution & contrastive tests
-│   ├── test_whatif.py            # What-If simulation & delta calculation tests
-│   ├── test_regression.py        # Regression tests against legacy scaling bug
-│   └── test_routes.py            # Flask route integration tests (/predict, /what-if)
+├── tests/                            # Automated unit & integration test suite (52 tests)
+│   ├── test_preprocessor.py          # Preprocessing & immutability tests
+│   ├── test_predictor.py             # Top-5 ranking & confidence score tests
+│   ├── test_explainer.py             # TreeSHAP & contrastive attribution tests
+│   ├── test_whatif.py                # What-If delta & rank shift tests
+│   ├── test_regional.py              # Maharashtra rules & diagnostic suite tests
+│   ├── test_secondary.py             # DES/IMD schema, cotton bales, missing value tests
+│   ├── test_regression.py            # Regression tests against legacy scaler bug
+│   └── test_routes.py                # Flask route integration & UI rendering tests
 │
-└── Crop-Recommendation-System-Using-Machine-Learning-main/  # Web Application
-    ├── app.py                    # Connected to CropPredictor, AgriExplainer, WhatIfSimulator
-    ├── static/img.jpg            # Static demonstration image
+└── Crop-Recommendation-System-Using-Machine-Learning-main/ # Web Application
+    ├── app.py                        # Flask controller integrating all modules
+    ├── static/
+    │   ├── css/style.css             # Vanilla CSS design system
+    │   └── img.jpg                   # Static UI asset
     └── templates/
-        ├── index.html            # Main UI with TreeSHAP waterfall & contrastive analysis
-        └── what_if.html          # Interactive What-If Simulation Studio
+        ├── index.html                # Main recommendation & SHAP dashboard
+        └── what_if.html              # Interactive What-If Simulation Studio
 ```
 
 ---
@@ -103,30 +115,64 @@ s:\MCA 2 Mini project\crop\
 ## 4. Local Installation and Execution Instructions
 
 ### Prerequisites
-- Python 3.10+ (CPU-compatible, no GPU required)
-- Operating System: Windows, Linux, or macOS
+- **Python:** Version 3.10+ (tested on Python 3.10.0, 64-bit)
+- **Operating System:** Windows, Linux, or macOS (CPU-only, no GPU required)
+- **Memory:** Minimum 2 GB RAM
 
-### Step 1: Activate Virtual Environment
+### Step 1: Clone and Set Up Virtual Environment
+
 ```powershell
 # From project root:
+cd "s:\MCA 2 Mini project\crop"
+
+# Create virtual environment (if not already created):
+python -m venv venv
+
+# Activate virtual environment on Windows (PowerShell):
 .\Crop-Recommendation-System-Using-Machine-Learning-main\venv\Scripts\Activate.ps1
+# Or if using root venv:
+# .\venv\Scripts\Activate.ps1
 ```
 
 ### Step 2: Install Dependencies
+
 ```powershell
 pip install -r requirements.txt
 ```
 
 ### Step 3: Run Automated Test Suite
+
 ```powershell
-python -m pytest tests -v
+python -m pytest tests/ -v
 ```
-*(All 31 tests should pass in under 5 seconds)*
+*(All 52 tests should pass in approximately 12 seconds).*
 
 ### Step 4: Run the Web Application
+
 ```powershell
 cd Crop-Recommendation-System-Using-Machine-Learning-main
 python app.py
 ```
-- Main Recommendation & SHAP Explanations: **`http://localhost:5000`**
-- Interactive What-If Simulation Studio: **`http://localhost:5000/what-if`**
+
+The application starts on the local development server:
+- **Main Recommendation & SHAP Dashboard:** [`http://127.0.0.1:5000`](http://127.0.0.1:5000)
+- **Interactive What-If Simulation Studio:** [`http://127.0.0.1:5000/what-if`](http://127.0.0.1:5000/what-if)
+
+---
+
+## 5. System Features & Usage Guide
+
+1. **Biophysical Recommendation:** Input Nitrogen ($N$), Phosphorus ($P$), Potassium ($K$), Temperature, Humidity, pH, and Rainfall.
+2. **Regional Metadata (Optional):** Select a Maharashtra district (e.g., Pune, Jalna, Ratnagiri) and target sowing month to trigger regional validation and historical cultivation context.
+3. **TreeSHAP Feature Decomposition:** View positive drivers (factors favoring the crop) and limiting constraints (factors penalizing the crop).
+4. **Contrastive Analysis:** Inspect pairwise feature differences between the Top-1 crop and runner-up candidate (*Why Crop A over Crop B?*).
+5. **What-If Studio:** Adjust environmental sliders to simulate climate perturbations (e.g., monsoonal drought) and track candidate rank shifts.
+
+---
+
+## 6. Research Disclaimers & Epistemic Boundaries
+
+- **Not Causal Agronomy:** TreeSHAP attributions represent statistical feature contributions within the machine learning model; they do not establish biological or causal mechanisms.
+- **Simulation vs. Prediction:** What-If Studio outputs are sensitivity simulations of model behavior, not field-tested physical forecasts.
+- **Historical Scope:** DES agricultural records cover 1997–2014. Absence of a crop in DES survey records indicates zero surveyed commercial cultivation in that period, not biological impossibility.
+- **Diagnostic Suite vs. Real-World Trials:** The 100% Interception Rate and 100% Retention Rate reflect software verification against structured diagnostic test cases, not randomized multi-season field trials.
