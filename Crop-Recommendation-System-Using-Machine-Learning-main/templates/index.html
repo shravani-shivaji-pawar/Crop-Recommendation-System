@@ -3,205 +3,263 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AgriWise: Explainable Crop Recommendation & Decision Support</title>
+    <title>AgriWise: Explainable, Climate-Aware & Region-Specific Crop Decision Support</title>
+    <!-- Bootstrap 5 for Grid & Utilities -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      h1 {
-        color: #2d6a4f;
-        text-align: center;
-        font-weight: 700;
-      }
-      .container {
-        background: #ffffff;
-        font-weight: 500;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      }
-      .badge-high { background-color: #2d6a4f; color: white; }
-      .badge-moderate { background-color: #d97706; color: white; }
-      .badge-low { background-color: #6b7280; color: white; }
-      .primary-card {
-        background-color: #1b4332;
-        color: white;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .disclaimer-box {
-        background-color: #f8fafc;
-        border-left: 4px solid #2d6a4f;
-        font-size: 0.88rem;
-        color: #475569;
-      }
-      .shap-pos { color: #16a34a; font-weight: 600; }
-      .shap-neg { color: #dc2626; font-weight: 600; }
-      .contrastive-box {
-        background: #f0fdf4;
-        border-left: 4px solid #16a34a;
-        padding: 1rem;
-        border-radius: 8px;
-      }
-    </style>
+    <!-- Custom AgriWise Modern Design System -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   </head>
-  <body style="background: #edf2f7; min-height: 100vh;">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/">🌱 AgriWise Crop System</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+  <body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg agri-nav sticky-top">
+      <div class="container-fluid px-lg-4">
+        <a class="navbar-brand" href="/">
+          <span class="fs-4">🌱</span>
+          <span>AgriWise</span>
+        </a>
+        <button class="navbar-toggler text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/">Recommendation Engine</a>
+              <a class="nav-link active" aria-current="page" href="/">Recommendation Dashboard</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/what-if">What-If Studio ⚡</a>
             </li>
           </ul>
-          <span class="navbar-text text-light small">Phase 4: Regional & Seasonal Layer (Maharashtra)</span>
+          <div class="d-flex align-items-center gap-3">
+            <span class="phase-pill">Phase 5: Interactive Dashboard</span>
+          </div>
         </div>
       </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="container my-4">
-      <h1>AgriWise: Crop Recommendation System <span class="text-success">🌱</span></h1>
-      <p class="text-center text-muted mb-4">Explainable, Climate-Aware & Region-Specific Agricultural Decision Support (Phase 4)</p>
+    <!-- Hero Header Banner -->
+    <header class="hero-banner text-center">
+      <div class="container">
+        <h1 class="hero-title">AgriWise: Crop Recommendation System <span class="text-success">🌱</span></h1>
+        <p class="hero-subtitle">
+          Explainable, Climate-Aware & Region-Specific Agricultural Decision Support (Phase 5)
+        </p>
+      </div>
+    </header>
 
+    <!-- Main Workspace Container -->
+    <main class="workspace-container">
       <!-- Error Message Banner -->
       {% if error_message %}
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" id="errorBanner">
         <strong>⚠️ Input Validation Error:</strong> {{ error_message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
       {% endif %}
 
-      <!-- Input Form -->
-      <form action="/predict" method="POST">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label for="Nitrogen" class="form-label">Nitrogen (N) <small class="text-muted">(0 - 200)</small></label>
-            <input type="number" step="any" id="Nitrogen" name="Nitrogen" placeholder="e.g. 90" 
-                   value="{{ form_data.Nitrogen if form_data else '' }}" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="Phosporus" class="form-label">Phosphorus (P) <small class="text-muted">(0 - 200)</small></label>
-            <input type="number" step="any" id="Phosporus" name="Phosporus" placeholder="e.g. 42" 
-                   value="{{ form_data.Phosporus if form_data else '' }}" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="Potassium" class="form-label">Potassium (K) <small class="text-muted">(0 - 300)</small></label>
-            <input type="number" step="any" id="Potassium" name="Potassium" placeholder="e.g. 43" 
-                   value="{{ form_data.Potassium if form_data else '' }}" class="form-control" required>
-          </div>
+      <!-- Step 1: Input Panel Card -->
+      <section class="agri-card" aria-labelledby="inputSectionTitle">
+        <div class="agri-card-header">
+          <h2 class="agri-card-title" id="inputSectionTitle">
+            <span class="step-badge">1</span>
+            <span>Soil, Climate & Regional Parameters</span>
+          </h2>
+          <span class="text-muted small">All 7 environmental variables validated against biophysical boundaries</span>
         </div>
 
-        <div class="row g-3 mt-2">
-          <div class="col-md-4">
-            <label for="Temperature" class="form-label">Temperature <small class="text-muted">(°C, 0 - 60)</small></label>
-            <input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="e.g. 20.87" 
-                   value="{{ form_data.Temperature if form_data else '' }}" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="Humidity" class="form-label">Humidity <small class="text-muted">(%, 0 - 100)</small></label>
-            <input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="e.g. 82.0" 
-                   value="{{ form_data.Humidity if form_data else '' }}" class="form-control" required>
-          </div>
-          <div class="col-md-4">
-            <label for="Ph" class="form-label">Soil pH <small class="text-muted">(3.0 - 11.0)</small></label>
-            <input type="number" step="0.01" id="Ph" name="Ph" placeholder="e.g. 6.5" 
-                   value="{{ form_data.Ph if form_data else '' }}" class="form-control" required>
-          </div>
+        <!-- Demonstration Preset Strip -->
+        <div class="presets-strip" role="region" aria-label="Demonstration Presets">
+          <span class="label">Quick Test Presets:</span>
+          <button type="button" class="btn-preset" onclick="loadPreset('rice')">🌾 Rice (Konkan Kharif)</button>
+          <button type="button" class="btn-preset" onclick="loadPreset('cotton')">🌿 Cotton (Vidarbha Kharif)</button>
+          <button type="button" class="btn-preset" onclick="loadPreset('grapes')">🍇 Grapes (Western MH)</button>
+          <button type="button" class="btn-preset" onclick="loadPreset('chickpea')">🌰 Chickpea (Rabi Pulse)</button>
+          <button type="button" class="btn-preset" onclick="loadPreset('apple_incomp')">🍎 Apple (Negative Control / Incompatible)</button>
         </div>
 
-        <div class="row g-3 mt-2">
-          <div class="col-md-4">
-            <label for="Rainfall" class="form-label">Rainfall <small class="text-muted">(mm, 0 - 1000)</small></label>
-            <input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" 
-                   value="{{ form_data.Rainfall if form_data else '' }}" class="form-control" required>
-          </div>
-        </div>
-
-        <!-- Phase 4: Regional & Seasonal Filter Controls -->
-        <div class="row g-3 mt-3 p-3 bg-light rounded-3 border">
-          <div class="col-12">
-            <span class="badge bg-success mb-1">Phase 4 Feature</span>
-            <span class="fw-bold text-dark ms-1">Maharashtra Regional & Seasonal Alignment (Optional)</span>
-            <p class="small text-muted mb-0">Select a target Maharashtra district and season to evaluate candidates against certified university crop calendars and agro-climatic zones without altering raw ML rankings.</p>
-          </div>
-          <div class="col-md-6">
-            <label for="district" class="form-label fw-semibold">Maharashtra District</label>
-            <select class="form-select" id="district" name="district">
-              <option value="">-- Optional: Select District (All 36 Available) --</option>
-              {% for d in districts %}
-              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label for="season" class="form-label fw-semibold">Agricultural Season</label>
-            <select class="form-select" id="season" name="season">
-              {% for s in seasons %}
-              <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-        <div class="row mt-4">
-          <div class="col-md-12 text-center">
-            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">Get Recommendation & Explanations</button>
-          </div>
-        </div>
-      </form>
-
-      <!-- Results Section -->
-      {% if result %}
-      <div id="recommendationSection" class="mt-5 pt-3 border-top">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-          <h3 class="text-success mb-0">Agricultural Recommendation & Decision Analysis</h3>
-          <!-- Direct button to open What-If studio with current inputs -->
-          <a href="/what-if?Nitrogen={{ form_data.Nitrogen }}&Phosporus={{ form_data.Phosporus }}&Potassium={{ form_data.Potassium }}&Temperature={{ form_data.Temperature }}&Humidity={{ form_data.Humidity }}&Ph={{ form_data.Ph }}&Rainfall={{ form_data.Rainfall }}" 
-             class="btn btn-outline-primary btn-sm">
-            ⚡ Open What-If Simulation Studio with these parameters
-          </a>
-        </div>
-
-        <div class="row g-4 justify-content-center">
-          <!-- Primary Recommendation Card -->
-          <div class="col-lg-4 col-md-5">
-            <div class="card primary-card shadow h-100">
-              <img src="{{ url_for('static', filename='img.jpg') }}" class="card-img-top" alt="Crop Image" style="height: 180px; object-fit: cover;">
-              <div class="card-body">
-                <span class="badge bg-light text-success mb-2">Rank #1 Match</span>
-                <h4 class="card-title fw-bold text-white">{{ primary.crop_name if primary else result }}</h4>
-                <p class="card-text text-light small">{{ result }}</p>
-                {% if primary %}
-                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary">
-                  <span>Model Confidence:</span>
-                  <span class="fs-5 fw-bold text-warning">{{ primary.model_confidence_score }}%</span>
+        <!-- Form Formulation -->
+        <form action="/predict" method="POST" id="recommendationForm">
+          <div class="row g-3">
+            <!-- Soil Macronutrients Group -->
+            <div class="col-12">
+              <span class="text-xs fw-bold text-uppercase text-muted letter-spacing-1 d-block mb-1">
+                🌿 Soil Macronutrients & Chemistry
+              </span>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Nitrogen" class="input-label">Nitrogen (N)</label>
+                  <span class="input-unit">0 - 200</span>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mt-1">
-                  <span>Confidence Level:</span>
-                  <span class="badge badge-high">{{ primary.confidence_level }}</span>
+                <input type="number" step="any" id="Nitrogen" name="Nitrogen" placeholder="e.g. 90" 
+                       value="{{ form_data.Nitrogen if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Phosporus" class="input-label">Phosphorus (P)</label>
+                  <span class="input-unit">0 - 200</span>
                 </div>
-                {% endif %}
+                <input type="number" step="any" id="Phosporus" name="Phosporus" placeholder="e.g. 42" 
+                       value="{{ form_data.Phosporus if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Potassium" class="input-label">Potassium (K)</label>
+                  <span class="input-unit">0 - 300</span>
+                </div>
+                <input type="number" step="any" id="Potassium" name="Potassium" placeholder="e.g. 43" 
+                       value="{{ form_data.Potassium if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Ph" class="input-label">Soil pH</label>
+                  <span class="input-unit">3.0 - 11.0</span>
+                </div>
+                <input type="number" step="0.01" id="Ph" name="Ph" placeholder="e.g. 6.5" 
+                       value="{{ form_data.Ph if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+
+            <!-- Climate Group -->
+            <div class="col-12 mt-3">
+              <span class="text-xs fw-bold text-uppercase text-muted letter-spacing-1 d-block mb-1">
+                ⛅ Atmospheric & Weather Conditions
+              </span>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Temperature" class="input-label">Temperature</label>
+                  <span class="input-unit">°C (0 - 60)</span>
+                </div>
+                <input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="e.g. 20.87" 
+                       value="{{ form_data.Temperature if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Humidity" class="input-label">Relative Humidity</label>
+                  <span class="input-unit">% (0 - 100)</span>
+                </div>
+                <input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="e.g. 82.0" 
+                       value="{{ form_data.Humidity if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+              <div class="input-group-modern">
+                <div class="input-label-row">
+                  <label for="Rainfall" class="input-label">Rainfall</label>
+                  <span class="input-unit">mm (0 - 1000)</span>
+                </div>
+                <input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="e.g. 202.9" 
+                       value="{{ form_data.Rainfall if form_data else '' }}" class="form-control-modern" required>
+              </div>
+            </div>
+
+            <!-- Maharashtra Regional & Seasonal Alignment (Phase 4 / 5) -->
+            <div class="col-12">
+              <div class="sub-region-box">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success">Agronomic Layer</span>
+                    <strong class="text-dark">Maharashtra Regional & Seasonal Alignment (Optional)</strong>
+                  </div>
+                  <span class="text-muted small">Evaluates against 9 Agro-Climatic Zones & University Crop Calendars</span>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="district" class="form-label small fw-bold text-dark">Target District (Maharashtra)</label>
+                    <select class="form-select border-0 shadow-sm" id="district" name="district">
+                      <option value="">-- Optional: Select District (All 36 Available) --</option>
+                      {% for d in districts %}
+                      <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="season" class="form-label small fw-bold text-dark">Target Agricultural Season</label>
+                    <select class="form-select border-0 shadow-sm" id="season" name="season">
+                      {% for s in seasons %}
+                      <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Top-5 Candidate Ranking Table -->
-          <div class="col-lg-8 col-md-7">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-header bg-dark text-white fw-bold">
-                Top Candidate Crops (Ranked by Model Proximity)
+          <!-- Submit Button -->
+          <div class="text-center mt-4 pt-2">
+            <button type="submit" id="submitBtn" class="btn-agri-submit">
+              <span>🌾</span>
+              <span>Generate Multi-Layer Agricultural Recommendation</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Multi-Layer Dashboard -->
+      {% if result %}
+      <div id="resultsSection" class="mt-4">
+        <!-- Dashboard Subheader with What-If studio shortcut -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h2 class="fs-4 fw-bold text-dark mb-1">Agricultural Recommendation & Decision Analysis</h2>
+            <p class="text-muted small mb-0">Multi-tier synthesis combining pure ML model proximity, certified regional agronomy, and TreeSHAP explainability.</p>
+          </div>
+          <a href="/what-if?Nitrogen={{ form_data.Nitrogen }}&Phosporus={{ form_data.Phosporus }}&Potassium={{ form_data.Potassium }}&Temperature={{ form_data.Temperature }}&Humidity={{ form_data.Humidity }}&Ph={{ form_data.Ph }}&Rainfall={{ form_data.Rainfall }}{% if selected_district %}&district={{ selected_district }}{% endif %}{% if selected_season %}&season={{ selected_season }}{% endif %}" 
+             class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm" id="openWhatIfBtn">
+            ⚡ Open What-If Simulation Studio with these parameters
+          </a>
+        </div>
+
+        <!-- LAYER 1: Pure Machine Learning Proximity -->
+        <section class="agri-card mb-4" aria-labelledby="layer1Title">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="layer1Title">
+              <span class="layer-badge">Layer 1</span>
+              <span>Pure Machine Learning Proximity (Benchmark Classifier)</span>
+            </h3>
+            <span class="text-muted small">Raw Random Forest Proximity &amp; Top-5 Softmax Ranking</span>
+          </div>
+
+          <div class="row g-4 align-items-stretch">
+            <!-- Primary Candidate Showcase Card -->
+            <div class="col-lg-4 col-md-5">
+              <div class="primary-crop-card">
+                <span class="badge bg-light text-dark fw-bold mb-2">Rank #1 Match</span>
+                <h4 class="fw-bold mb-1 text-white">{{ primary.crop_name if primary else result }}</h4>
+                <p class="small text-light opacity-90 mb-3">{{ result }}</p>
+
+                <div class="my-3 py-2 border-top border-bottom border-light border-opacity-25">
+                  <div class="text-uppercase small text-light opacity-75 letter-spacing-1">Model Confidence Score</div>
+                  <div class="score-display">{{ primary.model_confidence_score }}%</div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center text-light small">
+                  <span>Confidence Level:</span>
+                  <span class="badge {% if primary.confidence_level == 'High' %}bg-success{% elif primary.confidence_level == 'Moderate' %}bg-warning text-dark{% else %}bg-secondary{% endif %} px-2 py-1">
+                    {{ primary.confidence_level }}
+                  </span>
+                </div>
               </div>
-              <div class="card-body p-0">
+            </div>
+
+            <!-- Top Candidate Crops Table -->
+            <div class="col-lg-8 col-md-7">
+              <div class="border rounded-3 p-3 bg-white h-100 shadow-sm">
+                <h5 class="fw-bold fs-6 text-dark mb-3">Top Candidate Crops (Ranked by Model Proximity)</h5>
                 <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light small">
+                  <table class="table-modern" id="topCandidatesTable">
+                    <thead>
                       <tr>
                         <th>Rank</th>
                         <th>Crop</th>
@@ -213,23 +271,23 @@
                     <tbody>
                       {% for cand in top_candidates %}
                       <tr {% if cand.rank == 1 %}class="table-success fw-bold"{% endif %}>
-                        <td>#{{ cand.rank }}</td>
-                        <td>{{ cand.crop_name }}</td>
+                        <td class="fw-bold">#{{ cand.rank }}</td>
+                        <td class="fw-semibold">{{ cand.crop_name }}</td>
                         <td>
-                          <div class="d-flex align-items-center">
-                            <span class="me-2" style="min-width: 45px;">{{ cand.model_confidence_score }}%</span>
-                            <div class="progress flex-grow-1" style="height: 6px;">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ cand.model_confidence_score }}%"></div>
+                          <div class="d-flex align-items-center gap-2">
+                            <span class="small fw-bold" style="min-width: 42px;">{{ cand.model_confidence_score }}%</span>
+                            <div class="confidence-bar-wrapper">
+                              <div class="confidence-bar-fill" style="width: {{ cand.model_confidence_score }}%;"></div>
                             </div>
                           </div>
                         </td>
                         <td>
                           {% if cand.confidence_level == 'High' %}
-                            <span class="badge badge-high">High</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">High</span>
                           {% elif cand.confidence_level == 'Moderate' %}
-                            <span class="badge badge-moderate">Moderate</span>
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Moderate</span>
                           {% else %}
-                            <span class="badge badge-low">Low</span>
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Low</span>
                           {% endif %}
                         </td>
                         <td class="small text-muted">{{ cand.explanation }}</td>
@@ -241,217 +299,265 @@
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Phase 4: Regional & Seasonal Viability Section -->
+        <!-- LAYER 2: Regional & Seasonal Decision Layer (Maharashtra) -->
         {% if regional_assessment %}
-        <div class="mt-5 pt-3">
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <div>
-              <h4 class="fw-bold text-dark mb-1">📍 Regional & Seasonal Viability Assessment</h4>
-              <p class="text-muted small mb-0">
-                Evaluation for <strong>{{ regional_assessment.district }} District</strong> in <strong>{{ regional_assessment.season }} Season</strong> 
-                against certified Maharashtra university crop calendars.
-              </p>
-            </div>
-            <span class="badge bg-primary px-3 py-2 fs-6">
+        <section class="agri-card mb-4" id="regionalAssessmentSection" aria-labelledby="layer2Title">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="layer2Title">
+              <span class="layer-badge">Layer 2</span>
+              <span>Regional &amp; Seasonal Viability Assessment</span>
+            </h3>
+            <span class="badge bg-primary px-3 py-2">
               {{ regional_assessment.agro_climatic_zone.zone_id }}: {{ regional_assessment.agro_climatic_zone.zone_name }}
             </span>
           </div>
 
-          <!-- Zone Detail Strip -->
-          <div class="card border-0 bg-light p-3 mb-4 rounded-3 shadow-sm">
-            <div class="row text-center g-2 small">
-              <div class="col-md-3">
-                <span class="text-muted d-block">Annual Normal Rainfall:</span>
-                <strong>{{ regional_assessment.agro_climatic_zone.annual_normal_rainfall_mm }} mm</strong>
+          <!-- Zone Context Strip -->
+          <div class="zone-metadata-strip">
+            <div class="row text-center g-2">
+              <div class="col-md-3 col-6 zone-stat-box">
+                <span class="zone-stat-label">Target Location</span>
+                <span class="zone-stat-value">{{ regional_assessment.district }} District ({{ regional_assessment.season }} Season)</span>
               </div>
-              <div class="col-md-3">
-                <span class="text-muted d-block">Rainfall Range:</span>
-                <strong>{{ regional_assessment.agro_climatic_zone.rainfall_range_mm[0] }} - {{ regional_assessment.agro_climatic_zone.rainfall_range_mm[1] }} mm</strong>
+              <div class="col-md-3 col-6 zone-stat-box">
+                <span class="zone-stat-label">Annual Normal Rainfall</span>
+                <span class="zone-stat-value">{{ regional_assessment.agro_climatic_zone.annual_normal_rainfall_mm }} mm (Range: {{ regional_assessment.agro_climatic_zone.rainfall_range_mm[0] }}-{{ regional_assessment.agro_climatic_zone.rainfall_range_mm[1] }} mm)</span>
               </div>
-              <div class="col-md-3">
-                <span class="text-muted d-block">Dominant Soil Types:</span>
-                <strong>{{ regional_assessment.agro_climatic_zone.dominant_soils | join(', ') }}</strong>
+              <div class="col-md-3 col-6 zone-stat-box">
+                <span class="zone-stat-label">Dominant Soils</span>
+                <span class="zone-stat-value">{{ regional_assessment.agro_climatic_zone.dominant_soils | join(', ') }}</span>
               </div>
-              <div class="col-md-3">
-                <span class="text-muted d-block">Extension University:</span>
-                <strong>{{ regional_assessment.agro_climatic_zone.university }}</strong>
+              <div class="col-md-3 col-6 zone-stat-box">
+                <span class="zone-stat-label">State University</span>
+                <span class="zone-stat-value">{{ regional_assessment.agro_climatic_zone.university }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Diagnostic Summary Alert -->
-          <div class="alert {% if 'Consensus' in regional_assessment.diagnostic_summary %}alert-success{% else %}alert-warning{% endif %} d-flex align-items-center mb-4" role="alert">
+          <!-- Diagnostic Consensus Alert -->
+          <div class="alert {% if 'Consensus' in regional_assessment.diagnostic_summary %}alert-success border-success-subtle{% else %}alert-warning border-warning-subtle{% endif %} d-flex align-items-center mb-4 shadow-sm" role="alert">
             <div class="fs-4 me-3">{% if 'Consensus' in regional_assessment.diagnostic_summary %}✅{% else %}⚠️{% endif %}</div>
             <div>
               <strong>Agronomic Synthesis:</strong> {{ regional_assessment.diagnostic_summary }}
             </div>
           </div>
 
-          <!-- Detailed Candidate Feasibility Table -->
-          <div class="card shadow-sm border-0">
-            <div class="card-header bg-dark text-white fw-bold">
-              Candidate Crops: Non-Destructive Regional Feasibility Analysis
+          <!-- Non-Destructive Regional Feasibility Table -->
+          <div class="border rounded-3 p-3 bg-white shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold fs-6 text-dark mb-0">Non-Destructive Regional Feasibility Analysis</h5>
+              <span class="small text-muted">Raw ML confidence scores are preserved without modification</span>
             </div>
-            <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                  <thead class="table-light small">
-                    <tr>
-                      <th>ML Rank</th>
-                      <th>Crop</th>
-                      <th>Raw ML Score</th>
-                      <th>Regional Feasibility Status</th>
-                      <th>Certified Sowing Window</th>
-                      <th>Agronomic Rationale & Literature Source</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for item in regional_assessment.regional_assessments %}
-                    <tr>
-                      <td class="fw-bold">#{{ item.ml_rank }}</td>
-                      <td class="fw-semibold">{{ item.crop_name }}</td>
-                      <td>
-                        <span class="badge bg-light text-dark border">{{ item.model_confidence_score }}%</span>
-                      </td>
-                      <td>
-                        {% if item.regional_status == 'Cultivable & In-Season' %}
-                          <span class="badge bg-success">Cultivable & In-Season</span>
-                        {% elif item.regional_status == 'Cultivable but Off-Season' %}
-                          <span class="badge bg-warning text-dark">Cultivable but Off-Season</span>
-                        {% elif item.regional_status == 'Agronomically Incompatible / Climatically Unsuited' %}
-                          <span class="badge bg-danger">Incompatible / Unsuited</span>
-                        {% else %}
-                          <span class="badge bg-secondary">Insufficient Evidence</span>
-                        {% endif %}
-                      </td>
-                      <td class="small">{{ item.sowing_window }}</td>
-                      <td class="small text-muted" style="max-width: 420px;">
-                        {{ item.rationale }}
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+            <div class="table-responsive">
+              <table class="table-modern" id="regionalFeasibilityTable">
+                <thead>
+                  <tr>
+                    <th>ML Rank</th>
+                    <th>Crop</th>
+                    <th>Raw ML Score</th>
+                    <th>Regional Feasibility Status</th>
+                    <th>Certified Sowing Window</th>
+                    <th>Agronomic Rationale &amp; Literature Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in regional_assessment.regional_assessments %}
+                  <tr>
+                    <td class="fw-bold">#{{ item.ml_rank }}</td>
+                    <td class="fw-semibold">{{ item.crop_name }}</td>
+                    <td>
+                      <span class="badge bg-light text-dark border">{{ item.model_confidence_score }}%</span>
+                    </td>
+                    <td>
+                      {% if item.regional_status == 'Cultivable & In-Season' %}
+                        <span class="status-pill in-season">✓ Cultivable &amp; In-Season</span>
+                      {% elif item.regional_status == 'Cultivable but Off-Season' %}
+                        <span class="status-pill off-season">⏳ Cultivable but Off-Season</span>
+                      {% elif item.regional_status == 'Agronomically Incompatible / Climatically Unsuited' %}
+                        <span class="status-pill incompatible">✕ Incompatible / Unsuited</span>
+                      {% else %}
+                        <span class="status-pill unknown">? Insufficient Evidence</span>
+                      {% endif %}
+                    </td>
+                    <td class="small">{{ item.sowing_window }}</td>
+                    <td class="small text-muted" style="max-width: 440px;">
+                      {{ item.rationale }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div class="p-3 mt-3 disclaimer-box rounded">
+          <!-- Regional Disclaimer -->
+          <div class="academic-notice-card">
             <strong>📌 Regional Notice:</strong> {{ regional_assessment.disclaimer }}
           </div>
-        </div>
+        </section>
         {% endif %}
 
-        <!-- Explainable AI (SHAP) Section -->
+        <!-- LAYER 3: Explainable AI — TreeSHAP Feature Attributions -->
         {% if explanation %}
-        <div class="mt-5 pt-3">
-          <h4 class="fw-bold text-dark mb-3">🔬 Explainable AI: TreeSHAP Feature Attributions</h4>
-          <p class="text-muted small">
-            Why did the model recommend <strong>{{ explanation.target_crop }}</strong>? 
-            Below are the exact mathematical Shapley contributions (positive factors favored the crop, negative factors acted as constraints).
+        <section class="agri-card mb-4" id="xaiSection" aria-labelledby="layer3Title">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="layer3Title">
+              <span class="layer-badge">Layer 3</span>
+              <span>Explainable AI: TreeSHAP Feature Attributions</span>
+            </h3>
+            <span class="text-muted small">Exact Shapley Efficiency (Base Value Prior: {{ explanation.base_value_pct }}%)</span>
+          </div>
+
+          <p class="text-muted small mb-3">
+            Why did the Random Forest recommend <strong>{{ explanation.target_crop }}</strong>?
+            The attributions below quantify the exact mathematical contribution ($\phi_i$) of each environmental factor toward the prediction.
           </p>
 
           <div class="row g-4">
-            <!-- Feature-Wise Contribution Table -->
+            <!-- Attribution Table -->
             <div class="col-lg-7">
-              <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-light fw-bold small text-muted">
-                  Feature Attribution Breakdown for {{ explanation.target_crop }} (Base Prior: {{ explanation.base_value_pct }}%)
-                </div>
-                <div class="card-body p-0">
-                  <div class="table-responsive">
-                    <table class="table table-sm table-hover align-middle mb-0">
-                      <thead class="table-light small">
-                        <tr>
-                          <th>Parameter</th>
-                          <th>Value</th>
-                          <th>SHAP Impact (Δ)</th>
-                          <th>Direction</th>
-                          <th>Agronomic Context</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for a in explanation.attributions %}
-                        <tr>
-                          <td class="fw-bold">{{ a.name }}</td>
-                          <td>{{ a.value }} {{ a.unit }}</td>
-                          <td class="{% if a.shap_value > 0 %}shap-pos{% elif a.shap_value < 0 %}shap-neg{% else %}text-muted{% endif %}">
-                            {% if a.shap_value > 0 %}+{% endif %}{{ a.contribution_pct }}%
-                          </td>
-                          <td>
-                            {% if a.impact == 'Positive' %}
-                              <span class="badge bg-success-subtle text-success">Supported ↑</span>
-                            {% elif a.impact == 'Negative' %}
-                              <span class="badge bg-danger-subtle text-danger">Penalized ↓</span>
-                            {% else %}
-                              <span class="badge bg-secondary-subtle text-secondary">Neutral</span>
-                            {% endif %}
-                          </td>
-                          <td class="small text-muted">{{ a.reason }}</td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+              <div class="border rounded-3 p-3 bg-white h-100 shadow-sm">
+                <h5 class="fw-bold fs-6 text-dark mb-3">Feature Attribution Breakdown for {{ explanation.target_crop }}</h5>
+                <div class="table-responsive">
+                  <table class="table-modern" id="shapAttributionTable">
+                    <thead>
+                      <tr>
+                        <th>Parameter</th>
+                        <th>Measured Value</th>
+                        <th>SHAP Impact (Δ)</th>
+                        <th>Direction</th>
+                        <th>Agronomic Context</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for a in explanation.attributions %}
+                      <tr>
+                        <td class="fw-bold">{{ a.name }}</td>
+                        <td class="font-monospace small">{{ a.value }} {{ a.unit }}</td>
+                        <td class="{% if a.shap_value > 0 %}delta-pos{% elif a.shap_value < 0 %}delta-neg{% else %}text-muted{% endif %}">
+                          {% if a.shap_value > 0 %}+{% endif %}{{ a.contribution_pct }}%
+                        </td>
+                        <td>
+                          {% if a.impact == 'Positive' %}
+                            <span class="badge bg-success-subtle text-success">Supported ↑</span>
+                          {% elif a.impact == 'Negative' %}
+                            <span class="badge bg-danger-subtle text-danger">Penalized ↓</span>
+                          {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary">Neutral</span>
+                          {% endif %}
+                        </td>
+                        <td class="small text-muted">{{ a.reason }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
 
-            <!-- Contrastive Explanation (Rank 1 vs Rank 2) -->
+            <!-- Contrastive Analysis Card -->
             <div class="col-lg-5">
-              <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-light fw-bold small text-muted">
-                  Pairwise Contrastive Analysis (Rank #1 vs. Runner-Up)
+              <div class="border rounded-3 p-3 bg-white h-100 shadow-sm">
+                <h5 class="fw-bold fs-6 text-dark mb-3">Pairwise Contrastive Analysis</h5>
+                {% if explanation.contrastive_explanation %}
+                <div class="p-3 mb-3 rounded-3" style="background: #f0fdf4; border-left: 4px solid #10b981;">
+                  <h6 class="fw-bold text-success mb-1">
+                    Why {{ explanation.target_crop }} over {{ explanation.contrastive_explanation.runner_up_name }}?
+                  </h6>
+                  <p class="small text-dark mb-0">
+                    {{ explanation.contrastive_explanation.explanation }}
+                  </p>
                 </div>
-                <div class="card-body">
-                  {% if explanation.contrastive_explanation %}
-                  <div class="contrastive-box mb-3">
-                    <h6 class="fw-bold text-success mb-1">
-                      Why {{ explanation.target_crop }} over {{ explanation.contrastive_explanation.runner_up_name }}?
-                    </h6>
-                    <p class="small mb-0 text-dark">
-                      {{ explanation.contrastive_explanation.explanation }}
-                    </p>
-                  </div>
 
-                  <h6 class="small fw-bold text-muted mb-2">Deciding Feature Differentials:</h6>
-                  <ul class="list-group list-group-flush small">
-                    {% for fd in explanation.contrastive_explanation.feature_deltas[:4] %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
-                      <span>{{ fd.name }}</span>
-                      <span class="badge {% if fd.favored_crop == explanation.target_crop %}bg-success{% else %}bg-secondary{% endif %}">
-                        Favors {{ fd.favored_crop }} ({{ fd.magnitude_pct }}%)
-                      </span>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                  {% else %}
-                  <p class="small text-muted mb-0">No runner-up candidate was close enough for contrastive analysis.</p>
-                  {% endif %}
-                </div>
+                <span class="text-xs fw-bold text-uppercase text-muted d-block mb-2">Deciding Feature Differentials:</span>
+                <ul class="list-group list-group-flush small">
+                  {% for fd in explanation.contrastive_explanation.feature_deltas[:4] %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
+                    <span class="fw-semibold">{{ fd.name }}</span>
+                    <span class="badge {% if fd.favored_crop == explanation.target_crop %}bg-success{% else %}bg-secondary{% endif %}">
+                      Favors {{ fd.favored_crop }} ({{ fd.magnitude_pct }}%)
+                    </span>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% else %}
+                <p class="small text-muted mb-0">No runner-up candidate was close enough for contrastive analysis.</p>
+                {% endif %}
               </div>
             </div>
           </div>
 
-          <!-- XAI Scientific Notice -->
-          <div class="p-3 mt-3 disclaimer-box rounded">
+          <div class="academic-notice-card">
             <strong>🔍 Explainability Notice:</strong> {{ explanation.scientific_disclaimer }}
           </div>
-        </div>
+        </section>
         {% endif %}
 
-        <!-- Scientific Disclaimer Alert -->
+        <!-- Scientific & Methodology Disclaimer -->
         {% if disclaimer %}
-        <div class="p-3 my-4 disclaimer-box rounded">
-          <strong>🔬 Academic & Scientific Note:</strong> {{ disclaimer }}
+        <div class="academic-notice-card" id="academicDisclaimer">
+          <strong>🔬 Academic &amp; Scientific Note:</strong> {{ disclaimer }}
         </div>
         {% endif %}
       </div>
       {% endif %}
-    </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted small border-top bg-white">
+      <div class="container">
+        <p class="mb-1"><strong>AgriWise</strong>: Explainable, Climate-Aware & Region-Specific Smart Agriculture Decision Support System</p>
+        <p class="text-xs mb-0">MCA Major Project • Developed with Python, Scikit-Learn, TreeSHAP, and Maharashtra Agro-Climatic Intelligence</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Preset Loader Script -->
+    <script>
+      const PRESETS = {
+        rice: {
+          Nitrogen: 90, Phosporus: 42, Potassium: 43,
+          Temperature: 20.87, Humidity: 82.00, Ph: 6.50, Rainfall: 202.93,
+          district: 'Ratnagiri', season: 'Kharif'
+        },
+        cotton: {
+          Nitrogen: 118, Phosporus: 46, Potassium: 20,
+          Temperature: 23.98, Humidity: 81.45, Ph: 6.90, Rainfall: 70.00,
+          district: 'Yavatmal', season: 'Kharif'
+        },
+        grapes: {
+          Nitrogen: 24, Phosporus: 62, Potassium: 42,
+          Temperature: 23.50, Humidity: 58.00, Ph: 6.90, Rainfall: 65.00,
+          district: 'Nashik', season: 'Perennial'
+        },
+        chickpea: {
+          Nitrogen: 40, Phosporus: 68, Potassium: 78,
+          Temperature: 17.02, Humidity: 16.99, Ph: 7.39, Rainfall: 75.00,
+          district: 'Solapur', season: 'Rabi'
+        },
+        apple_incomp: {
+          Nitrogen: 20, Phosporus: 135, Potassium: 198,
+          Temperature: 22.00, Humidity: 92.00, Ph: 5.80, Rainfall: 110.00,
+          district: 'Solapur', season: 'Kharif'
+        }
+      };
+
+      function loadPreset(key) {
+        const data = PRESETS[key];
+        if (!data) return;
+        for (const [field, val] of Object.entries(data)) {
+          const el = document.getElementById(field);
+          if (el) {
+            el.value = val;
+            el.classList.add('border-success');
+            setTimeout(() => el.classList.remove('border-success'), 800);
+          }
+        }
+      }
+    </script>
   </body>
 </html>

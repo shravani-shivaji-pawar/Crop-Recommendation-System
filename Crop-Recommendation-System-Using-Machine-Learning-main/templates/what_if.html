@@ -3,210 +3,310 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AgriWise: Interactive What-If Simulation Studio</title>
+    <title>AgriWise: Interactive What-If Counterfactual Simulation Studio</title>
+    <!-- Bootstrap 5 for Grid & Utilities -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body { background: #f1f5f9; color: #1e293b; }
-      .studio-header {
-        background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-        color: white;
-        padding: 2.5rem 0;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      }
-      .card-box {
-        background: #ffffff;
-        border-radius: 14px;
-        border: none;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-        padding: 1.5rem;
-        height: 100%;
-      }
-      .badge-gain { background-color: #10b981; color: white; }
-      .badge-drop { background-color: #ef4444; color: white; }
-      .badge-same { background-color: #64748b; color: white; }
-      .disclaimer-callout {
-        background: #f8fafc;
-        border-left: 4px solid #0284c7;
-        font-size: 0.88rem;
-        color: #334155;
-      }
-    </style>
+    <!-- Custom AgriWise Modern Design System -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/">🌱 AgriWise Decision Support</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg agri-nav sticky-top">
+      <div class="container-fluid px-lg-4">
+        <a class="navbar-brand" href="/">
+          <span class="fs-4">🌱</span>
+          <span>AgriWise</span>
+        </a>
+        <button class="navbar-toggler text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
             <li class="nav-item">
-              <a class="nav-link" href="/">Recommendation Engine</a>
+              <a class="nav-link" href="/">Recommendation Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="/what-if">What-If Studio</a>
+              <a class="nav-link active" aria-current="page" href="/what-if">What-If Studio ⚡</a>
             </li>
           </ul>
-          <span class="navbar-text small text-light">Phase 4: Regional & Seasonal Layer (Maharashtra)</span>
+          <div class="d-flex align-items-center gap-3">
+            <span class="phase-pill">Phase 5: Interactive Dashboard</span>
+          </div>
         </div>
       </div>
     </nav>
 
-    <!-- Header -->
-    <div class="studio-header text-center">
+    <!-- Studio Hero Header -->
+    <header class="hero-banner text-center">
       <div class="container">
-        <h1 class="fw-bold">⚡ What-If Counterfactual Simulation Studio</h1>
-        <p class="lead mb-0 text-light opacity-90">
-          Simulate how crop rankings and model confidence respond to changes in soil nutrients and weather conditions
+        <h1 class="hero-title">⚡ What-If Counterfactual Simulation Studio</h1>
+        <p class="hero-subtitle">
+          Simulate how crop rankings, model confidence, and regional viability respond to variations in soil nutrients and weather conditions
         </p>
       </div>
-    </div>
+    </header>
 
-    <div class="container mb-5">
+    <!-- Main Workspace Container -->
+    <main class="workspace-container">
       <!-- Error Alert -->
       {% if error_message %}
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" id="errorBanner">
         <strong>⚠️ Simulation Error:</strong> {{ error_message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
       {% endif %}
 
-      <!-- Simulation Form -->
-      <form action="/what-if" method="POST">
-        <div class="row g-4">
-          <!-- Baseline Scenario Column -->
-          <div class="col-lg-6">
-            <div class="card-box border-top border-4 border-secondary">
-              <h4 class="fw-bold text-secondary mb-3">1. Baseline Conditions (Scenario A)</h4>
-              <p class="small text-muted mb-4">Original environmental and soil parameters:</p>
+      <!-- Simulation Formulation Card -->
+      <section class="agri-card" aria-labelledby="studioFormTitle">
+        <div class="agri-card-header">
+          <h2 class="agri-card-title fs-5" id="studioFormTitle">
+            <span class="step-badge">⚡</span>
+            <span>Counterfactual Scenario Setup</span>
+          </h2>
+          <span class="text-muted small">Compare baseline conditions against perturbed climate or nutrient scenarios</span>
+        </div>
 
-              <div class="row g-3">
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Nitrogen (N)</label>
-                  <input type="number" step="any" name="base_Nitrogen" class="form-control" value="{{ base_inputs.Nitrogen }}" required>
+        <!-- Quick Scenario Shift Bar -->
+        <div class="presets-strip" role="region" aria-label="Quick Scenario Adjustments">
+          <span class="label">Quick Perturbation Scenarios:</span>
+          <button type="button" class="btn-preset" onclick="applyShift('drought')">💧 Severe Drought (-40% Rain)</button>
+          <button type="button" class="btn-preset" onclick="applyShift('heatwave')">☀️ Heatwave (+4°C Temp, -15% Humid)</button>
+          <button type="button" class="btn-preset" onclick="applyShift('high_nitrogen')">🧪 High Nitrogen (+50 N)</button>
+          <button type="button" class="btn-preset" onclick="applyShift('acidic_soil')">🧪 Soil Acidification (pH 5.2)</button>
+          <button type="button" class="btn-preset" onclick="resetPerturbed()">↺ Reset to Match Baseline</button>
+        </div>
+
+        <form action="/what-if" method="POST" id="whatifForm">
+          <div class="row g-4">
+            <!-- Baseline Scenario (Scenario A) -->
+            <div class="col-lg-6">
+              <div class="border rounded-3 p-3 bg-white h-100 shadow-sm border-top border-4 border-secondary">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h3 class="fs-6 fw-bold text-dark mb-0">1. Baseline Conditions (Scenario A)</h3>
+                  <span class="badge bg-secondary-subtle text-secondary border">Original Benchmark</span>
                 </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Phosphorus (P)</label>
-                  <input type="number" step="any" name="base_Phosporus" class="form-control" value="{{ base_inputs.Phosporus }}" required>
+                <p class="small text-muted mb-3">Standard measured or starting environmental parameters:</p>
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Nitrogen" class="input-label">Nitrogen (N)</label>
+                        <span class="input-unit">0-200</span>
+                      </div>
+                      <input type="number" step="any" id="base_Nitrogen" name="base_Nitrogen" class="form-control-modern" value="{{ base_inputs.Nitrogen }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Phosporus" class="input-label">Phosphorus (P)</label>
+                        <span class="input-unit">0-200</span>
+                      </div>
+                      <input type="number" step="any" id="base_Phosporus" name="base_Phosporus" class="form-control-modern" value="{{ base_inputs.Phosporus }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Potassium" class="input-label">Potassium (K)</label>
+                        <span class="input-unit">0-300</span>
+                      </div>
+                      <input type="number" step="any" id="base_Potassium" name="base_Potassium" class="form-control-modern" value="{{ base_inputs.Potassium }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Ph" class="input-label">Soil pH</label>
+                        <span class="input-unit">3-11</span>
+                      </div>
+                      <input type="number" step="0.01" id="base_Ph" name="base_Ph" class="form-control-modern" value="{{ base_inputs.Ph }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Temperature" class="input-label">Temp (°C)</label>
+                        <span class="input-unit">0-60</span>
+                      </div>
+                      <input type="number" step="0.01" id="base_Temperature" name="base_Temperature" class="form-control-modern" value="{{ base_inputs.Temperature }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Humidity" class="input-label">Humidity (%)</label>
+                        <span class="input-unit">0-100</span>
+                      </div>
+                      <input type="number" step="0.01" id="base_Humidity" name="base_Humidity" class="form-control-modern" value="{{ base_inputs.Humidity }}" required>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="base_Rainfall" class="input-label">Rainfall (mm)</label>
+                        <span class="input-unit">0-1000</span>
+                      </div>
+                      <input type="number" step="0.01" id="base_Rainfall" name="base_Rainfall" class="form-control-modern" value="{{ base_inputs.Rainfall }}" required>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Potassium (K)</label>
-                  <input type="number" step="any" name="base_Potassium" class="form-control" value="{{ base_inputs.Potassium }}" required>
+              </div>
+            </div>
+
+            <!-- Perturbed Scenario (Scenario B) -->
+            <div class="col-lg-6">
+              <div class="border rounded-3 p-3 bg-white h-100 shadow-sm border-top border-4 border-success">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h3 class="fs-6 fw-bold text-dark mb-0">2. Perturbed Conditions (Scenario B)</h3>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle">Simulated Variation</span>
                 </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Temperature (°C)</label>
-                  <input type="number" step="0.01" name="base_Temperature" class="form-control" value="{{ base_inputs.Temperature }}" required>
+                <p class="small text-muted mb-3">Altered environmental parameters for sensitivity analysis:</p>
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Nitrogen" class="input-label">Simulated N</label>
+                        <span class="input-unit">0-200</span>
+                      </div>
+                      <input type="number" step="any" id="mod_Nitrogen" name="mod_Nitrogen" class="form-control-modern" value="{{ modified_inputs.Nitrogen }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Phosporus" class="input-label">Simulated P</label>
+                        <span class="input-unit">0-200</span>
+                      </div>
+                      <input type="number" step="any" id="mod_Phosporus" name="mod_Phosporus" class="form-control-modern" value="{{ modified_inputs.Phosporus }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Potassium" class="input-label">Simulated K</label>
+                        <span class="input-unit">0-300</span>
+                      </div>
+                      <input type="number" step="any" id="mod_Potassium" name="mod_Potassium" class="form-control-modern" value="{{ modified_inputs.Potassium }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Ph" class="input-label">Simulated pH</label>
+                        <span class="input-unit">3-11</span>
+                      </div>
+                      <input type="number" step="0.01" id="mod_Ph" name="mod_Ph" class="form-control-modern" value="{{ modified_inputs.Ph }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Temperature" class="input-label">Simulated Temp</label>
+                        <span class="input-unit">°C</span>
+                      </div>
+                      <input type="number" step="0.01" id="mod_Temperature" name="mod_Temperature" class="form-control-modern" value="{{ modified_inputs.Temperature }}" required>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Humidity" class="input-label">Simulated Humid</label>
+                        <span class="input-unit">%</span>
+                      </div>
+                      <input type="number" step="0.01" id="mod_Humidity" name="mod_Humidity" class="form-control-modern" value="{{ modified_inputs.Humidity }}" required>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="input-group-modern">
+                      <div class="input-label-row">
+                        <label for="mod_Rainfall" class="input-label">Simulated Rainfall</label>
+                        <span class="input-unit">mm</span>
+                      </div>
+                      <input type="number" step="0.01" id="mod_Rainfall" name="mod_Rainfall" class="form-control-modern" value="{{ modified_inputs.Rainfall }}" required>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Humidity (%)</label>
-                  <input type="number" step="0.01" name="base_Humidity" class="form-control" value="{{ base_inputs.Humidity }}" required>
+              </div>
+            </div>
+
+            <!-- Optional Maharashtra Regional Context for What-If -->
+            <div class="col-12">
+              <div class="sub-region-box">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success">Agronomic Layer</span>
+                    <strong class="text-dark">Maharashtra Regional Context (Optional)</strong>
+                  </div>
+                  <span class="text-muted small">Evaluate how candidate shifts align with agro-climatic zoning</span>
                 </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Soil pH</label>
-                  <input type="number" step="0.01" name="base_Ph" class="form-control" value="{{ base_inputs.Ph }}" required>
-                </div>
-                <div class="col-12">
-                  <label class="form-label small fw-bold">Rainfall (mm)</label>
-                  <input type="number" step="0.01" name="base_Rainfall" class="form-control" value="{{ base_inputs.Rainfall }}" required>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="district" class="form-label small fw-bold text-dark">Maharashtra District</label>
+                    <select class="form-select border-0 shadow-sm" id="district" name="district">
+                      <option value="">-- Optional: Select District (All 36 Available) --</option>
+                      {% for d in districts %}
+                      <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="season" class="form-label small fw-bold text-dark">Agricultural Season</label>
+                    <select class="form-select border-0 shadow-sm" id="season" name="season">
+                      {% for s in seasons %}
+                      <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Counterfactual Scenario Column -->
-          <div class="col-lg-6">
-            <div class="card-box border-top border-4 border-success">
-              <h4 class="fw-bold text-success mb-3">2. Perturbed Conditions (Scenario B)</h4>
-              <p class="small text-muted mb-4">Adjust values to simulate climate or soil variations:</p>
-
-              <div class="row g-3">
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated N</label>
-                  <input type="number" step="any" name="mod_Nitrogen" class="form-control" value="{{ modified_inputs.Nitrogen }}" required>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated P</label>
-                  <input type="number" step="any" name="mod_Phosporus" class="form-control" value="{{ modified_inputs.Phosporus }}" required>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated K</label>
-                  <input type="number" step="any" name="mod_Potassium" class="form-control" value="{{ modified_inputs.Potassium }}" required>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated Temp (°C)</label>
-                  <input type="number" step="0.01" name="mod_Temperature" class="form-control" value="{{ modified_inputs.Temperature }}" required>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated Humidity (%)</label>
-                  <input type="number" step="0.01" name="mod_Humidity" class="form-control" value="{{ modified_inputs.Humidity }}" required>
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-bold">Simulated Soil pH</label>
-                  <input type="number" step="0.01" name="mod_Ph" class="form-control" value="{{ modified_inputs.Ph }}" required>
-                </div>
-                <div class="col-12">
-                  <label class="form-label small fw-bold">Simulated Rainfall (mm)</label>
-                  <input type="number" step="0.01" name="mod_Rainfall" class="form-control" value="{{ modified_inputs.Rainfall }}" required>
-                </div>
-              </div>
-            </div>
+          <!-- Run Simulation Button -->
+          <div class="text-center mt-4 pt-2">
+            <button type="submit" id="runSimBtn" class="btn-agri-submit">
+              <span>⚡</span>
+              <span>Run Side-by-Side Simulation</span>
+            </button>
           </div>
-        </div>
-
-        <!-- Phase 4: Regional Context for What-If Analysis -->
-        <div class="row g-3 mt-3 p-3 bg-white rounded-3 border">
-          <div class="col-12">
-            <span class="badge bg-success mb-1">Phase 4 Feature</span>
-            <span class="fw-bold text-dark ms-1">Maharashtra Regional Context (Optional)</span>
-            <p class="small text-muted mb-0">Evaluate how your What-If simulation candidates align with certified agro-climatic zones and sowing windows in Maharashtra.</p>
-          </div>
-          <div class="col-md-6">
-            <label for="district" class="form-label small fw-bold">Maharashtra District</label>
-            <select class="form-select" id="district" name="district">
-              <option value="">-- Optional: Select District (All 36 Available) --</option>
-              {% for d in districts %}
-              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label for="season" class="form-label small fw-bold">Agricultural Season</label>
-            <select class="form-select" id="season" name="season">
-              {% for s in seasons %}
-              <option value="{{ s }}" {% if selected_season == s %}selected{% endif %}>{{ s }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-        <div class="text-center mt-4">
-          <button type="submit" class="btn btn-success btn-lg px-5 shadow">
-            ⚡ Run Side-by-Side Simulation
-          </button>
-        </div>
-      </form>
+        </form>
+      </section>
 
       <!-- Simulation Results Section -->
       {% if simulation_result %}
-      <div class="mt-5 pt-3">
+      <div id="simulationResultsSection" class="mt-4">
         <!-- Summary Callout -->
-        <div class="alert {% if simulation_result.primary_shifted %}alert-warning{% else %}alert-info{% endif %} shadow-sm py-3 mb-4">
-          <h5 class="fw-bold mb-1">
-            {% if simulation_result.primary_shifted %}
-              🔄 Primary Crop Recommendation Changed
-            {% else %}
-              ✅ Primary Crop Recommendation Maintained
-            {% endif %}
-          </h5>
-          <p class="mb-0">{{ simulation_result.summary|safe }}</p>
+        <div class="alert {% if simulation_result.primary_shifted %}alert-warning border-warning-subtle{% else %}alert-info border-info-subtle{% endif %} shadow-sm py-3 mb-4 d-flex align-items-center gap-3">
+          <div class="fs-3">
+            {% if simulation_result.primary_shifted %}🔄{% else %}✅{% endif %}
+          </div>
+          <div>
+            <h5 class="fw-bold mb-1 fs-6 text-dark">
+              {% if simulation_result.primary_shifted %}
+                Primary Crop Recommendation Changed
+              {% else %}
+                Primary Crop Recommendation Maintained
+              {% endif %}
+            </h5>
+            <p class="mb-0 small text-dark">{{ simulation_result.summary|safe }}</p>
+          </div>
         </div>
 
-        <!-- Parameter Deltas Table -->
-        <div class="card-box mb-4">
-          <h5 class="fw-bold mb-3">Environmental Parameter Variations (Δ)</h5>
+        <!-- Environmental Parameter Deltas Table -->
+        <section class="agri-card mb-4" aria-labelledby="paramDeltasTitle">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="paramDeltasTitle">
+              <span class="layer-badge">Sensitivity</span>
+              <span>Environmental Parameter Variations (Δ)</span>
+            </h3>
+            <span class="text-muted small">Input Differentials Between Baseline and Perturbed Scenarios</span>
+          </div>
           <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle mb-0">
-              <thead class="table-light small">
+            <table class="table-modern" id="paramDeltasTable">
+              <thead>
                 <tr>
                   <th>Parameter</th>
                   <th>Baseline</th>
@@ -220,8 +320,8 @@
                 {% for d in simulation_result.parameter_deltas %}
                 <tr>
                   <td class="fw-bold">{{ d.name }}</td>
-                  <td>{{ d.base_value }} {{ d.unit }}</td>
-                  <td>{{ d.modified_value }} {{ d.unit }}</td>
+                  <td class="font-monospace small">{{ d.base_value }} {{ d.unit }}</td>
+                  <td class="font-monospace small">{{ d.modified_value }} {{ d.unit }}</td>
                   <td class="fw-bold {% if d.delta > 0 %}text-success{% elif d.delta < 0 %}text-danger{% else %}text-muted{% endif %}">
                     {% if d.delta > 0 %}+{% endif %}{{ d.delta }}
                   </td>
@@ -230,11 +330,11 @@
                   </td>
                   <td>
                     {% if d.direction == 'Increased' %}
-                      <span class="badge bg-success-subtle text-success">Increased ↑</span>
+                      <span class="badge bg-success-subtle text-success border border-success-subtle">Increased ↑</span>
                     {% elif d.direction == 'Decreased' %}
-                      <span class="badge bg-danger-subtle text-danger">Decreased ↓</span>
+                      <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Decreased ↓</span>
                     {% else %}
-                      <span class="badge bg-secondary-subtle text-secondary">Identical</span>
+                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Identical</span>
                     {% endif %}
                   </td>
                 </tr>
@@ -242,14 +342,20 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <!-- Rank Shifts Comparison -->
-        <div class="card-box mb-4">
-          <h5 class="fw-bold mb-3">Top-5 Crop Candidate Rank & Score Shifts</h5>
+        <!-- Rank & Score Shifts Comparison -->
+        <section class="agri-card mb-4" aria-labelledby="rankShiftsTitle">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="rankShiftsTitle">
+              <span class="layer-badge">Response</span>
+              <span>Top-5 Crop Candidate Rank &amp; Score Shifts</span>
+            </h3>
+            <span class="text-muted small">Tracking Multi-Class Softmax Movements Across Scenarios</span>
+          </div>
           <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-light small">
+            <table class="table-modern" id="rankShiftsTable">
+              <thead>
                 <tr>
                   <th>Candidate Crop</th>
                   <th>Baseline Rank</th>
@@ -264,20 +370,20 @@
                 {% for r in simulation_result.rank_shifts %}
                 <tr>
                   <td class="fw-bold">{{ r.crop_name }}</td>
-                  <td>#{{ r.base_rank }}</td>
+                  <td class="text-muted">#{{ r.base_rank }}</td>
                   <td class="fw-bold">#{{ r.modified_rank }}</td>
                   <td>{{ r.base_score }}%</td>
-                  <td>{{ r.modified_score }}%</td>
+                  <td class="fw-bold">{{ r.modified_score }}%</td>
                   <td class="fw-bold {% if r.score_delta > 0 %}text-success{% elif r.score_delta < 0 %}text-danger{% endif %}">
                     {% if r.score_delta > 0 %}+{% endif %}{{ r.score_delta }}%
                   </td>
                   <td>
                     {% if 'Gained' in r.movement or 'Entered' in r.movement %}
-                      <span class="badge badge-gain">{{ r.movement }}</span>
+                      <span class="badge bg-success text-white">{{ r.movement }}</span>
                     {% elif 'Dropped' in r.movement or 'Exited' in r.movement %}
-                      <span class="badge badge-drop">{{ r.movement }}</span>
+                      <span class="badge bg-danger text-white">{{ r.movement }}</span>
                     {% else %}
-                      <span class="badge badge-same">{{ r.movement }}</span>
+                      <span class="badge bg-secondary text-white">{{ r.movement }}</span>
                     {% endif %}
                   </td>
                 </tr>
@@ -285,50 +391,116 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <!-- Regional Viability Shift for What-If (if selected) -->
+        <!-- Regional Viability Response (if district selected) -->
         {% if base_regional and mod_regional %}
-        <div class="card-box mb-4">
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h5 class="fw-bold mb-0">📍 Regional Viability Response ({{ base_regional.district }} - {{ base_regional.season }})</h5>
-            <span class="badge bg-primary">{{ base_regional.agro_climatic_zone.zone_id }}: {{ base_regional.agro_climatic_zone.zone_name }}</span>
+        <section class="agri-card mb-4" id="whatifRegionalSection" aria-labelledby="regionalShiftTitle">
+          <div class="agri-card-header">
+            <h3 class="agri-card-title fs-5" id="regionalShiftTitle">
+              <span class="layer-badge">Regional</span>
+              <span>Regional Viability Response</span>
+            </h3>
+            <span class="badge bg-primary px-3 py-2">
+              {{ base_regional.district }} District ({{ base_regional.season }} Season) • {{ base_regional.agro_climatic_zone.zone_id }}
+            </span>
           </div>
           <div class="row g-3">
             <div class="col-md-6">
-              <div class="p-3 border rounded-3 bg-light">
-                <span class="small text-muted fw-bold d-block">Baseline Scenario Status:</span>
-                <h6 class="fw-bold text-dark mt-1">{{ simulation_result.base_prediction.primary_recommendation.crop_name }}</h6>
+              <div class="p-3 border rounded-3 bg-light h-100 shadow-sm">
+                <span class="small text-muted fw-bold d-block text-uppercase">Baseline Scenario Recommendation</span>
+                <h4 class="fw-bold text-dark mt-1 fs-5">{{ simulation_result.base_prediction.primary_recommendation.crop_name }}</h4>
                 {% set base_eval = base_regional.regional_assessments[0] %}
-                <span class="badge {% if base_eval.regional_status == 'Cultivable & In-Season' %}bg-success{% elif base_eval.regional_status == 'Cultivable but Off-Season' %}bg-warning text-dark{% else %}bg-danger{% endif %} mb-2">
-                  {{ base_eval.regional_status }}
-                </span>
+                <div class="my-2">
+                  {% if base_eval.regional_status == 'Cultivable & In-Season' %}
+                    <span class="status-pill in-season">✓ Cultivable &amp; In-Season</span>
+                  {% elif base_eval.regional_status == 'Cultivable but Off-Season' %}
+                    <span class="status-pill off-season">⏳ Cultivable but Off-Season</span>
+                  {% elif base_eval.regional_status == 'Agronomically Incompatible / Climatically Unsuited' %}
+                    <span class="status-pill incompatible">✕ Incompatible / Unsuited</span>
+                  {% else %}
+                    <span class="status-pill unknown">? Insufficient Evidence</span>
+                  {% endif %}
+                </div>
                 <p class="small text-muted mb-0">{{ base_eval.rationale }}</p>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="p-3 border rounded-3 bg-light">
-                <span class="small text-muted fw-bold d-block">Simulated Scenario Status:</span>
-                <h6 class="fw-bold text-dark mt-1">{{ simulation_result.modified_prediction.primary_recommendation.crop_name }}</h6>
+              <div class="p-3 border rounded-3 bg-light h-100 shadow-sm">
+                <span class="small text-muted fw-bold d-block text-uppercase">Simulated Scenario Recommendation</span>
+                <h4 class="fw-bold text-dark mt-1 fs-5">{{ simulation_result.modified_prediction.primary_recommendation.crop_name }}</h4>
                 {% set mod_eval = mod_regional.regional_assessments[0] %}
-                <span class="badge {% if mod_eval.regional_status == 'Cultivable & In-Season' %}bg-success{% elif mod_eval.regional_status == 'Cultivable but Off-Season' %}bg-warning text-dark{% else %}bg-danger{% endif %} mb-2">
-                  {{ mod_eval.regional_status }}
-                </span>
+                <div class="my-2">
+                  {% if mod_eval.regional_status == 'Cultivable & In-Season' %}
+                    <span class="status-pill in-season">✓ Cultivable &amp; In-Season</span>
+                  {% elif mod_eval.regional_status == 'Cultivable but Off-Season' %}
+                    <span class="status-pill off-season">⏳ Cultivable but Off-Season</span>
+                  {% elif mod_eval.regional_status == 'Agronomically Incompatible / Climatically Unsuited' %}
+                    <span class="status-pill incompatible">✕ Incompatible / Unsuited</span>
+                  {% else %}
+                    <span class="status-pill unknown">? Insufficient Evidence</span>
+                  {% endif %}
+                </div>
                 <p class="small text-muted mb-0">{{ mod_eval.rationale }}</p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
         {% endif %}
 
-        <!-- Scientific Guardrail -->
-        <div class="p-3 disclaimer-callout rounded">
-          <strong>🔬 Agronomic & Sensitivity Guardrail:</strong> {{ simulation_result.scientific_disclaimer }}
+        <!-- Scientific Sensitivity Guardrail Notice -->
+        <div class="academic-notice-card" id="sensitivityGuardrailNotice">
+          <strong>🔬 Agronomic &amp; Sensitivity Guardrail:</strong> {{ simulation_result.scientific_disclaimer }}
         </div>
       </div>
       {% endif %}
-    </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted small border-top bg-white">
+      <div class="container">
+        <p class="mb-1"><strong>AgriWise</strong>: Explainable, Climate-Aware & Region-Specific Smart Agriculture Decision Support System</p>
+        <p class="text-xs mb-0">MCA Major Project • What-If Counterfactual Sensitivity Engine</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Interactive Perturbation Helpers -->
+    <script>
+      function applyShift(type) {
+        // First sync mod values with current base values
+        resetPerturbed();
+        
+        const modRain = document.getElementById('mod_Rainfall');
+        const modTemp = document.getElementById('mod_Temperature');
+        const modHumid = document.getElementById('mod_Humidity');
+        const modN = document.getElementById('mod_Nitrogen');
+        const modPh = document.getElementById('mod_Ph');
+
+        if (type === 'drought' && modRain) {
+          modRain.value = Math.max(10, Math.round(parseFloat(modRain.value || 100) * 0.6 * 100) / 100);
+        } else if (type === 'heatwave') {
+          if (modTemp) modTemp.value = Math.min(50, Math.round((parseFloat(modTemp.value || 25) + 4.0) * 100) / 100);
+          if (modHumid) modHumid.value = Math.max(10, Math.round((parseFloat(modHumid.value || 60) - 15.0) * 100) / 100);
+        } else if (type === 'high_nitrogen' && modN) {
+          modN.value = Math.min(200, Math.round((parseFloat(modN.value || 50) + 50.0) * 100) / 100);
+        } else if (type === 'acidic_soil' && modPh) {
+          modPh.value = 5.20;
+        }
+      }
+
+      function resetPerturbed() {
+        const fields = ['Nitrogen', 'Phosporus', 'Potassium', 'Temperature', 'Humidity', 'Ph', 'Rainfall'];
+        fields.forEach(f => {
+          const baseEl = document.getElementById('base_' + f);
+          const modEl = document.getElementById('mod_' + f);
+          if (baseEl && modEl) {
+            modEl.value = baseEl.value;
+          }
+        });
+      }
+    </script>
   </body>
 </html>

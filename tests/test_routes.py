@@ -214,3 +214,28 @@ def test_whatif_post_route_with_regional_context(client):
     assert "Regional Viability Response" in html
     assert "Kolhapur" in html
 
+
+def test_ui_static_css_and_presets_rendered(client):
+    """Verifies that the upgraded Phase 5 UI links custom CSS and provides quick presets."""
+    response = client.get("/")
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "static/css/style.css" in html
+    assert "Quick Test Presets" in html
+    assert "Rice (Konkan Kharif)" in html
+    assert "Phase 5: Interactive Dashboard" in html
+    assert "Soil Macronutrients &amp; Chemistry" in html or "Soil Macronutrients & Chemistry" in html
+
+
+def test_whatif_ui_elements_rendered(client):
+    """Verifies that the upgraded What-If Studio links custom CSS and interactive shifts."""
+    response = client.get("/what-if")
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "static/css/style.css" in html
+    assert "Quick Perturbation Scenarios" in html
+    assert "Severe Drought" in html
+    assert "Heatwave" in html
+    assert "Phase 5: Interactive Dashboard" in html
+
+
