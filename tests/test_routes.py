@@ -27,7 +27,7 @@ def test_index_route(client):
     """Verifies that the home page loads with 200 OK."""
     response = client.get("/")
     assert response.status_code == 200
-    assert b"AgriWise: Crop Recommendation System" in response.data
+    assert b"AgroVista AI" in response.data
 
 
 def test_predict_route_success_with_shap(client):

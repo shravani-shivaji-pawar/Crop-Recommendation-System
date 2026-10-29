@@ -1,4 +1,4 @@
-# AgriWise: An Explainable, Climate-Aware & Region-Specific AI Agricultural Decision Support System
+# AgroVista AI: Explainable Crop Recommendation with Regional and Seasonal Intelligence
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Status: Phase 7 Completed](https://img.shields.io/badge/Status-Phase%207%20Completed-brightgreen.svg)]()
@@ -6,13 +6,13 @@
 [![Explainability: TreeSHAP](https://img.shields.io/badge/XAI-TreeSHAP-orange.svg)]()
 [![License: Academic / Open](https://img.shields.io/badge/License-Academic-lightgrey.svg)]()
 
-**AgriWise** is an explainable, climate-aware, and region-specific agricultural decision support system designed to upgrade conventional single-crop classifiers into a scientifically grounded, multi-criteria recommendation platform.
+**AgroVista AI** is an explainable, climate-aware, and region-specific agricultural decision support system designed to upgrade conventional single-crop classifiers into a scientifically grounded, multi-criteria recommendation platform.
 
 ---
 
 ## 1. Project Overview & Evolution
 
-AgriWise transforms a legacy, black-box crop classification script into a publication-grade decision support platform:
+AgroVista AI transforms a legacy, black-box crop classification script into a publication-grade decision support platform:
 
 - **Phase 1: Project Audit & Baseline Evaluation**  
   Uncovered a critical data leakage and scaler overwrite bug that caused live prediction accuracy to collapse to 6.14%. Legacy artifacts safely preserved in [`legacy/`](file:///s:/MCA%202%20Mini%20project/crop/legacy).
