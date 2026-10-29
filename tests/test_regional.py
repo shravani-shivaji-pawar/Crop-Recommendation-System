@@ -134,5 +134,7 @@ def test_diagnostic_suite_execution():
     metrics = report["metrics_summary"]
 
     assert 0.0 <= metrics["Agronomic_False_Positive_Rate_Raw_ML_pct"] <= 100.0
-    assert metrics["Incompatible_Crop_Interception_Rate_pct"] >= 95.0
-    assert metrics["In_Season_Retention_Rate_pct"] >= 80.0
+    assert metrics["Unviable_Top1_Recommendation_Rate_pct"] == 54.41
+    assert metrics["Conventional_False_Positive_Rate_Unviable_Scenarios_pct"] == 100.0
+    assert metrics["Incompatible_Crop_Interception_Rate_pct"] == 100.0
+    assert metrics["In_Season_Retention_Rate_pct"] == 87.10

@@ -306,13 +306,16 @@ def run_phase4_diagnostic_evaluation() -> Dict[str, Any]:
         })
 
     # Mathematical metric calculations
-    # 1. Agronomic False Positive Rate of raw ML
-    afpr_ml = round((ml_false_positives / total_known_queries) * 100, 2) if total_known_queries > 0 else 0.0
+    # 1. Unviable Top-1 Recommendation Rate among all known queries (formerly labeled AFPR)
+    unviable_top1_rate = round((ml_false_positives / total_known_queries) * 100, 2) if total_known_queries > 0 else 0.0
 
-    # 2. Incompatible / Unseasonal Crop Interception Rate
+    # 2. Conventional False Positive Rate on ground-truth unviable queries (FP / (FP + TN) where TN=0 on unviable inputs)
+    conventional_fpr = round((ml_false_positives / total_gt_unviable) * 100, 2) if total_gt_unviable > 0 else 0.0
+
+    # 3. Incompatible / Unseasonal Crop Interception Rate (Recall on unviable queries)
     icir = round((intercepted_unviable / total_gt_unviable) * 100, 2) if total_gt_unviable > 0 else 0.0
 
-    # 3. In-Season Retention Rate
+    # 4. In-Season Retention Rate (True Positive Rate on feasible queries)
     isrr = round((retained_feasible / total_gt_feasible) * 100, 2) if total_gt_feasible > 0 else 0.0
 
     summary_report = {
@@ -323,14 +326,30 @@ def run_phase4_diagnostic_evaluation() -> Dict[str, Any]:
         "total_known_queries": total_known_queries,
         "total_unknown_queries": len(suite) - total_known_queries,
         "metrics_summary": {
-            "Agronomic_False_Positive_Rate_Raw_ML_pct": afpr_ml,
+            "Unviable_Top1_Recommendation_Rate_pct": unviable_top1_rate,
+            "Conventional_False_Positive_Rate_Unviable_Scenarios_pct": conventional_fpr,
             "Incompatible_Crop_Interception_Rate_pct": icir,
-            "In_Season_Retention_Rate_pct": isrr
+            "In_Season_Retention_Rate_pct": isrr,
+            "Agronomic_False_Positive_Rate_Raw_ML_pct": unviable_top1_rate  # Preserved alias for backward compatibility
         },
         "metric_definitions": {
-            "AFPR": "Percentage of raw ML Top-1 recommendations that are uncultivable or unseasonal according to ground-truth university recommendations (excluding unknown cases from denominator).",
-            "ICIR": "Percentage of ground-truth unviable or unseasonal cases successfully flagged and intercepted by the regional decision layer.",
-            "ISRR": "Percentage of legitimate ground-truth in-season crops correctly retained without false rejection."
+            "Unviable_Top1_Recommendation_Rate_pct": (
+                "Percentage of all known diagnostic queries (37 / 68 = 54.41%) where the unconstrained "
+                "baseline ML model recommended an agronomically unviable or unseasonal crop as Top-1."
+            ),
+            "Conventional_False_Positive_Rate_Unviable_Scenarios_pct": (
+                "Conventional False Positive Rate specifically on ground-truth unviable queries "
+                "(37 / 37 = 100.0%), measuring the proportion of unviable scenarios where raw ML "
+                "falsely predicted the candidate as top-1 without regional constraint."
+            ),
+            "Incompatible_Crop_Interception_Rate_pct": (
+                "Percentage of ground-truth unviable or unseasonal cases (37 / 37 = 100.0%) successfully "
+                "flagged and intercepted by the regional decision layer (interception recall)."
+            ),
+            "In_Season_Retention_Rate_pct": (
+                "Percentage of legitimate ground-truth in-season crops (27 / 31 = 87.10%) correctly retained "
+                "without false rejection."
+            )
         },
         "per_group_breakdown": group_stats,
         "query_results": results,

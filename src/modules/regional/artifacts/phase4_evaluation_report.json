@@ -6,14 +6,17 @@
   "total_known_queries": 68,
   "total_unknown_queries": 4,
   "metrics_summary": {
-    "Agronomic_False_Positive_Rate_Raw_ML_pct": 54.41,
+    "Unviable_Top1_Recommendation_Rate_pct": 54.41,
+    "Conventional_False_Positive_Rate_Unviable_Scenarios_pct": 100.0,
     "Incompatible_Crop_Interception_Rate_pct": 100.0,
-    "In_Season_Retention_Rate_pct": 87.1
+    "In_Season_Retention_Rate_pct": 87.1,
+    "Agronomic_False_Positive_Rate_Raw_ML_pct": 54.41
   },
   "metric_definitions": {
-    "AFPR": "Percentage of raw ML Top-1 recommendations that are uncultivable or unseasonal according to ground-truth university recommendations (excluding unknown cases from denominator).",
-    "ICIR": "Percentage of ground-truth unviable or unseasonal cases successfully flagged and intercepted by the regional decision layer.",
-    "ISRR": "Percentage of legitimate ground-truth in-season crops correctly retained without false rejection."
+    "Unviable_Top1_Recommendation_Rate_pct": "Percentage of all known diagnostic queries (37 / 68 = 54.41%) where the unconstrained baseline ML model recommended an agronomically unviable or unseasonal crop as Top-1.",
+    "Conventional_False_Positive_Rate_Unviable_Scenarios_pct": "Conventional False Positive Rate specifically on ground-truth unviable queries (37 / 37 = 100.0%), measuring the proportion of unviable scenarios where raw ML falsely predicted the candidate as top-1 without regional constraint.",
+    "Incompatible_Crop_Interception_Rate_pct": "Percentage of ground-truth unviable or unseasonal cases (37 / 37 = 100.0%) successfully flagged and intercepted by the regional decision layer (interception recall).",
+    "In_Season_Retention_Rate_pct": "Percentage of legitimate ground-truth in-season crops (27 / 31 = 87.10%) correctly retained without false rejection."
   },
   "per_group_breakdown": {
     "Group A: Positive Controls (In-Season Valid)": {
