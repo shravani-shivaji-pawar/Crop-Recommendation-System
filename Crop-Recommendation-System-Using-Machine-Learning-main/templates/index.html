@@ -337,12 +337,31 @@
           </div>
 
           <!-- Diagnostic Consensus Alert -->
-          <div class="alert {% if 'Consensus' in regional_assessment.diagnostic_summary %}alert-success border-success-subtle{% else %}alert-warning border-warning-subtle{% endif %} d-flex align-items-center mb-4 shadow-sm" role="alert">
+          <div class="alert {% if 'Consensus' in regional_assessment.diagnostic_summary %}alert-success border-success-subtle{% else %}alert-warning border-warning-subtle{% endif %} d-flex align-items-center mb-3 shadow-sm" role="alert">
             <div class="fs-4 me-3">{% if 'Consensus' in regional_assessment.diagnostic_summary %}✅{% else %}⚠️{% endif %}</div>
             <div>
               <strong>Agronomic Synthesis:</strong> {{ regional_assessment.diagnostic_summary }}
             </div>
           </div>
+
+          <!-- IMD Climatological Departure Banner -->
+          {% if regional_assessment.climatology_comparison and regional_assessment.climatology_comparison.has_climatology %}
+          {% set clim = regional_assessment.climatology_comparison %}
+          <div class="card border-0 bg-light p-3 mb-4 rounded-3 shadow-sm" style="border-left: 4px solid #0284c7 !important;">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+              <span class="small fw-bold text-uppercase text-primary letter-spacing-1">
+                🌧️ IMD Pune Rainfall Departure Analysis (30-Year Normals)
+              </span>
+              <span class="{{ clim.badge_class }} px-2 py-1 small fw-bold">
+                {{ clim.regime }} ({{ clim.departure_pct }}% vs Normal)
+              </span>
+            </div>
+            <p class="small text-dark mb-0">
+              <strong>Climatology Advisory:</strong> {{ clim.advisory }}
+              <span class="text-muted d-block mt-1 text-xs">Baseline Reference: {{ clim.reference_label }} = {{ clim.normal_mm }} mm (Annual Normal = {{ clim.annual_normal_mm }} mm) • Observed Input = {{ clim.observed_rainfall_mm }} mm • Source: {{ clim.source }}</span>
+            </p>
+          </div>
+          {% endif %}
 
           <!-- Non-Destructive Regional Feasibility Table -->
           <div class="border rounded-3 p-3 bg-white shadow-sm">
@@ -383,7 +402,26 @@
                     </td>
                     <td class="small">{{ item.sowing_window }}</td>
                     <td class="small text-muted" style="max-width: 440px;">
-                      {{ item.rationale }}
+                      <div>{{ item.rationale }}</div>
+                      {% if item.historical_production_summary and item.historical_production_summary.has_records %}
+                      {% set hp = item.historical_production_summary %}
+                      <div class="mt-2 pt-1 border-top">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.72rem;">
+                          📊 DES Historical Record: {{ hp.commercial_scale }}
+                        </span>
+                        <span class="d-block text-xs text-dark mt-1">
+                          Avg Cultivated Area: <strong>{{ '{:,.0f}'.format(hp.mean_area_ha) }} ha</strong>
+                          {% if hp.mean_production_tonnes %} • Output: <strong>{{ '{:,.0f}'.format(hp.mean_production_tonnes) }} MT</strong>{% endif %}
+                          {% if hp.mean_yield_kg_per_ha %} • Yield: <strong>{{ '{:,.0f}'.format(hp.mean_yield_kg_per_ha) }} kg/ha</strong>{% endif %}
+                        </span>
+                      </div>
+                      {% elif item.historical_production_summary and not item.historical_production_summary.has_records %}
+                      <div class="mt-2 pt-1 border-top">
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size: 0.72rem;">
+                          📊 DES Record: Zero Commercial Survey Records
+                        </span>
+                      </div>
+                      {% endif %}
                     </td>
                   </tr>
                   {% endfor %}

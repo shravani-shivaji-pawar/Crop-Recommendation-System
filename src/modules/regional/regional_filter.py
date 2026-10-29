@@ -9,6 +9,10 @@ from src.modules.regional.maharashtra_data import (
     SEASONS,
     ViabilityStatus
 )
+from src.modules.regional.secondary_data import (
+    HistoricalProductionRepository,
+    ClimatologyRepository
+)
 
 
 class RegionalDecisionLayer:
@@ -19,12 +23,15 @@ class RegionalDecisionLayer:
     - Evaluates each candidate against certified Maharashtra Agro-Climatic Zones and university calendars.
     - Categorizes candidates into 4 mutually exclusive statuses.
     - Transparently documents the agronomic rationale and literature source for every assessment.
+    - Enriches assessments with read-only historical DES production statistics and IMD rainfall departures.
     """
 
     def __init__(self):
         self.districts = MAHARASHTRA_DISTRICTS
         self.zones = AGRO_CLIMATIC_ZONES
         self.profiles = CROP_REGIONAL_PROFILES
+        self.des_repo = HistoricalProductionRepository()
+        self.climatology_repo = ClimatologyRepository()
 
     def validate_district(self, district: str) -> str:
         """Validates district against the 36 official Maharashtra districts (case-insensitive)."""
@@ -213,6 +220,9 @@ class RegionalDecisionLayer:
                             f"Recommended window: {sowing_window}. Source: {source}."
                         )
 
+            # Retrieve historical DES cultivation statistics (read-only secondary data)
+            hist_stats = self.des_repo.get_crop_history(crop_name, canonical_district)
+
             assessment_item = {
                 "crop_name": crop_name,
                 "ml_rank": cand["rank"],
@@ -223,7 +233,8 @@ class RegionalDecisionLayer:
                 "district": canonical_district,
                 "season": canonical_season,
                 "rationale": rationale,
-                "irrigation_note": irrigation_note
+                "irrigation_note": irrigation_note,
+                "historical_production_summary": hist_stats
             }
 
             regional_assessments.append(assessment_item)
@@ -253,6 +264,24 @@ class RegionalDecisionLayer:
                 f"{canonical_district} in {canonical_season}. Explore alternative cropping plans."
             )
 
+        # Evaluate IMD rainfall departure if input rainfall is present
+        climatology_eval = None
+        obs_rain = None
+        if "inputs_validated" in prediction_result and "rainfall" in prediction_result["inputs_validated"]:
+            obs_rain = prediction_result["inputs_validated"]["rainfall"]["value"]
+        elif "rainfall" in prediction_result:
+            obs_rain = prediction_result["rainfall"]
+
+        if obs_rain is not None:
+            try:
+                climatology_eval = self.climatology_repo.evaluate_rainfall_departure(
+                    canonical_district,
+                    observed_rainfall_mm=float(obs_rain),
+                    season=canonical_season
+                )
+            except Exception as cr_err:
+                print(f"Warning: IMD climatology departure evaluation failed: {cr_err}")
+
         return {
             "status": "success",
             "district": canonical_district,
@@ -265,6 +294,7 @@ class RegionalDecisionLayer:
                 "university": zone_info["university"],
                 "annual_normal_rainfall_mm": dist_info["annual_rainfall_normal_mm"]
             },
+            "climatology_comparison": climatology_eval,
             "unfiltered_ml_ranking": raw_candidates,
             "regional_assessments": regional_assessments,
             "in_season_recommended": in_season_recommended,

@@ -239,3 +239,24 @@ def test_whatif_ui_elements_rendered(client):
     assert "Phase 5: Interactive Dashboard" in html
 
 
+def test_predict_route_renders_secondary_data_insights(client):
+    """Verifies that submitting prediction with district renders IMD rainfall departure and DES badges."""
+    data = {
+        "Nitrogen": "90",
+        "Phosporus": "42",
+        "Potassium": "43",
+        "Temperature": "20.87",
+        "Humidity": "82.0",
+        "Ph": "6.5",
+        "Rainfall": "202.93",
+        "district": "Ratnagiri",
+        "season": "Kharif"
+    }
+    response = client.post("/predict", data=data)
+    assert response.status_code == 200
+    html = response.data.decode("utf-8")
+    assert "IMD Pune Rainfall Departure Analysis" in html
+    assert "DES Historical Record" in html or "DES Record" in html
+
+
+

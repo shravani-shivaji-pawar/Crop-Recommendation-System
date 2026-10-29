@@ -63,46 +63,54 @@ To comply with research governance rules, this manifest establishes the exact so
 ---
 
 ### Source 3: Historical District-Wise Crop Area & Production (APS / DES)
-- **Exact Title:** *District-wise Season-wise Crop Production Statistics (1997–98 to 2020–21)*
+- **Exact Title:** *District-wise Season-wise Crop Production Statistics (1997–98 to 2014–15)*
 - **Publishing Agency:** Directorate of Economics and Statistics (DES), Department of Agriculture & Farmers Welfare, Ministry of Agriculture and Farmers Welfare, Government of India.
-- **Official Access URL:**
-  - DACNET Portal: [https://aps.dac.gov.in](https://aps.dac.gov.in)
-  - Open Government Data Portal: [https://data.gov.in/resource/district-wise-season-wise-crop-production-statistics](https://data.gov.in/resource/district-wise-season-wise-crop-production-statistics)
-- **Access / Audit Date:** October 2026.
-- **License:** Open Government Data (OGD) License India.
-- **Coverage:** 36 districts of Maharashtra; 24 historical years (1997–2021).
+- **Direct Source URL:** [https://raw.githubusercontent.com/ritveek19/EDA_CropProduction/master/crop_production.csv](https://raw.githubusercontent.com/ritveek19/EDA_CropProduction/master/crop_production.csv) (Mirroring DACNET / Open Government Data APY repository).
+- **Local File Path:** [`data/raw/maharashtra_crop_production_des_raw.csv`](file:///s:/MCA%202%20Mini%20project/crop/data/raw/maharashtra_crop_production_des_raw.csv)
+- **Access / Download Date:** October 29, 2026.
+- **License:** Open Government Data (OGD) License India / Open Academic Access.
+- **Coverage:** 35 agricultural districts of Maharashtra; 18 historical years (1997–2014); 12,628 raw records.
 - **Schema & Units:**
   - `State_Name` (String, "Maharashtra")
-  - `District_Name` (String, e.g. "PUNE", "NASHIK", "NAGPUR")
-  - `Crop_Year` (Integer, e.g. 2019)
+  - `District_Name` (String, uppercase: "AHMEDNAGAR", "PUNE", "NAGPUR", etc.)
+  - `Crop_Year` (Integer, 1997–2014)
   - `Season` (String, "Kharif", "Rabi", "Summer", "Whole Year")
-  - `Crop` (String, standardized commodity title)
+  - `Crop` (String, 34 surveyed commodities, e.g. "Rice", "Gram", "Cotton(lint)")
   - `Area` (Float, Hectares)
-  - `Production` (Float, Metric Tonnes / Bales for cotton)
-  - `Yield` (Float, kg/ha)
-- **Join Keys:** `[district_name, crop_standard_name, season]`.
-- **Known Anomalies & Data Cleaning Requirements:**
-  - Cotton is officially recorded in "Bales of 170 kg", requiring conversion to metric tonnes: $\text{Tonnes} = \text{Bales} \times 0.170$.
-  - Perennial horticultural crops (Mango, Grapes, Pomegranate) have missing production figures in earlier years (reported only as cultivated area).
-- **Integration Status:** **VERIFIED REFERENCE (Used to corroborate commercial cultivation presence in Maharashtra reference tables).**
+  - `Production` (Float, Metric Tonnes; Cotton reported in Bales of 170 kg)
+- **Missing Values:** Exactly 0 missing in `State_Name`, `District_Name`, `Crop_Year`, `Season`, `Crop`, `Area`. Exactly 132 missing values in `Production` (primarily fruit/orchard crops where only acreage was enumerated).
+- **Data Cleaning & Unit Normalization Steps:**
+  1. Whitespace stripped from all string fields.
+  2. Canonical district name mapping reconciling administrative variations (e.g., `AURANGABAD` → `Chhatrapati Sambhajinagar`, `OSMANABAD` → `Dharashiv`, `BOMBAY` → `Mumbai City`).
+  3. Cotton unit transformation: Official DES statistics record Cotton in "Bales of 170 kg". Converted to Metric Tonnes via: $\text{Production\_Tonnes} = \text{Production} \times 0.170$.
+  4. Derived productivity yield: $\text{Yield (kg/ha)} = \frac{\text{Production (MT)} \times 1000}{\text{Area (ha)}}$.
+  5. Decoupled read-only integration via [`HistoricalProductionRepository`](file:///s:/MCA%202%20Mini%20project/crop/src/modules/regional/secondary_data.py). Zero data fabrication: crops with no historical DES records return explicit "No official records" indicators.
+- **Integration Status:** **ACTIVE SECONDARY INTEGRATION (Integrated via `src/modules/regional/secondary_data.py`).**
 
 ---
 
 ### Source 4: Customized District Rainfall Climatology & Normals (IMD Pune)
-- **Exact Title:** *Customized District Rainfall Climatology and Normal Tables (1991–2020)*
+- **Exact Title:** *Customized District Rainfall Climatology and Normal Tables (1971–2020 / 1991–2020 Normals)*
 - **Publishing Agency:** Climate Research & Services (CRS), India Meteorological Department (IMD), Pune, Ministry of Earth Sciences.
-- **Official URL:** [https://imdpune.gov.in](https://imdpune.gov.in) / [https://mausam.imd.gov.in](https://mausam.imd.gov.in)
-- **Access / Audit Date:** October 2026.
-- **License:** Open Government Data (OGD) License India.
-- **Coverage:** 36 districts of Maharashtra.
+- **Official References:** [https://imdpune.gov.in](https://imdpune.gov.in) / [https://mausam.imd.gov.in](https://mausam.imd.gov.in)
+- **Local File Path:** [`data/raw/maharashtra_district_rainfall_normals_imd.csv`](file:///s:/MCA%202%20Mini%20project/crop/data/raw/maharashtra_district_rainfall_normals_imd.csv)
+- **Access / Compilation Date:** October 29, 2026.
+- **License:** Open Government Data (OGD) License India / Public Meteorological Service.
+- **Coverage:** All 36 districts of Maharashtra across all 9 Agro-Climatic Zones.
 - **Schema & Units:**
-  - `district` (String)
-  - `sw_monsoon_normal_mm` (Float, June–September long-period average)
-  - `post_monsoon_normal_mm` (Float, October–December)
-  - `winter_normal_mm` (Float, January–February)
-  - `pre_monsoon_normal_mm` (Float, March–May)
-  - `annual_normal_mm` (Float)
-- **Integration Status:** **VERIFIED REFERENCE (Used to establish normal district rainfall bounds).**
+  - `district` (String, canonical district name)
+  - `division` (String, administrative division: Konkan, Pune, Nashik, Aurangabad, Amravati, Nagpur)
+  - `zone_id` (String, `MH-Z1` through `MH-Z9`)
+  - `sw_monsoon_jjas_normal_mm` (Float, June–September SW monsoon LPA normal, mm)
+  - `post_monsoon_ond_normal_mm` (Float, October–December post-monsoon normal, mm)
+  - `winter_jf_normal_mm` (Float, January–February winter normal, mm)
+  - `pre_monsoon_mam_normal_mm` (Float, March–May pre-monsoon normal, mm)
+  - `annual_normal_mm` (Float, 30-year annual normal precipitation, mm)
+- **Analytical Application:**
+  - Integrated via [`ClimatologyRepository`](file:///s:/MCA%202%20Mini%20project/crop/src/modules/regional/secondary_data.py).
+  - Evaluates user-entered rainfall departure ($\Delta\%$) against official IMD categories:
+    Large Excess ($\ge +60\%$), Excess ($+20\%$ to $+59\%$), Normal ($-19\%$ to $+19\%$), Deficient ($-59\%$ to $-20\%$), Large Deficient ($-99\%$ to $-60\%$), Scanty ($-100\%$).
+- **Integration Status:** **ACTIVE SECONDARY INTEGRATION (Integrated via `src/modules/regional/secondary_data.py`).**
 
 ---
 
@@ -116,3 +124,4 @@ To comply with research governance rules, this manifest establishes the exact so
   - `water_requirement_max_mm` (Float, mm/season)
   - `drought_resilience_class` (String: `"High"`, `"Moderate"`, `"Sensitive"`)
 - **Integration Status:** **VERIFIED REFERENCE (Used for irrigation dependency classifications).**
+

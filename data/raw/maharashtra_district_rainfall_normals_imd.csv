@@ -1,0 +1,37 @@
+district,division,zone_id,zone_name,sw_monsoon_jjas_normal_mm,post_monsoon_ond_normal_mm,winter_jf_normal_mm,pre_monsoon_mam_normal_mm,annual_normal_mm,source_agency,baseline_period
+Ahmednagar,Nashik,MH-Z6,Scarcity Zone,481.0,60.8,7.0,30.7,579.5,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Akola,Amravati,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),644.4,81.5,9.3,41.2,776.4,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Amravati,Amravati,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),716.3,90.6,10.4,45.7,863.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Beed,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),552.9,69.9,8.0,35.3,666.1,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Bhandara,Nagpur,MH-Z9,High Rainfall Zone (Eastern Vidarbha),1104.1,139.7,16.0,70.4,1330.2,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Buldhana,Amravati,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),616.7,78.0,8.9,39.4,743.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Chandrapur,Nagpur,MH-Z9,High Rainfall Zone (Eastern Vidarbha),1037.0,131.2,15.0,66.2,1249.4,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Chhatrapati Sambhajinagar,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),596.2,75.4,8.6,38.1,718.3,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Dharashiv,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),605.9,76.6,8.8,38.7,730.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Dhule,Nashik,MH-Z6,Scarcity Zone,508.0,64.3,7.3,32.4,612.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Gadchiroli,Nagpur,MH-Z9,High Rainfall Zone (Eastern Vidarbha),1181.9,149.5,17.1,75.5,1424.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Gondia,Nagpur,MH-Z9,High Rainfall Zone (Eastern Vidarbha),1170.3,148.0,16.9,74.8,1410.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Hingoli,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),739.1,93.5,10.7,47.2,890.5,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Jalgaon,Nashik,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),597.6,75.6,8.6,38.2,720.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Jalna,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),589.3,74.5,8.5,37.7,710.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Kolhapur,Pune,MH-Z4,Transition Zone 1 (Sub-Montane),1477.4,186.9,21.4,94.3,1780.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Latur,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),655.7,83.0,9.5,41.8,790.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Mumbai City,Konkan,MH-Z2,North Konkan Coastal Zone,2008.6,254.1,29.0,128.3,2420.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Mumbai Suburban,Konkan,MH-Z2,North Konkan Coastal Zone,2008.6,254.1,29.0,128.3,2420.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Nagpur,Nagpur,MH-Z9,High Rainfall Zone (Eastern Vidarbha),962.8,121.8,13.9,61.5,1160.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Nanded,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),742.8,94.0,10.7,47.5,895.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Nandurbar,Nashik,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),713.8,90.3,10.3,45.6,860.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Nashik,Nashik,MH-Z5,Transition Zone 2 (Plain Zone),672.3,85.0,9.7,43.0,810.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Palghar,Konkan,MH-Z2,North Konkan Coastal Zone,2158.0,273.0,31.2,137.8,2600.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Parbhani,Aurangabad,MH-Z7,Assured Rainfall Zone (Marathwada & Khandesh),684.8,86.6,9.9,43.7,825.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Pune,Pune,MH-Z5,Transition Zone 2 (Plain Zone),622.5,78.8,9.0,39.7,750.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Raigad,Konkan,MH-Z2,North Konkan Coastal Zone,2573.0,325.5,37.2,164.3,3100.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Ratnagiri,Konkan,MH-Z1,South Konkan Coastal Zone,2788.8,352.8,40.3,178.1,3360.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Sangli,Pune,MH-Z5,Transition Zone 2 (Plain Zone),531.2,67.2,7.7,33.9,640.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Satara,Pune,MH-Z4,Transition Zone 1 (Sub-Montane),763.6,96.6,11.0,48.8,920.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Sindhudurg,Konkan,MH-Z1,South Konkan Coastal Zone,2888.4,365.4,41.8,184.4,3480.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Solapur,Pune,MH-Z6,Scarcity Zone,464.8,58.8,6.7,29.7,560.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Thane,Konkan,MH-Z2,North Konkan Coastal Zone,2116.5,267.8,30.6,135.1,2550.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Wardha,Nagpur,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),871.5,110.2,12.6,55.7,1050.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Washim,Amravati,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),759.4,96.1,11.0,48.5,915.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
+Yavatmal,Amravati,MH-Z8,Moderate Rainfall Zone (Western Vidarbha),821.7,104.0,11.9,52.4,990.0,India Meteorological Department (IMD Pune) Climate Research & Services (CRS),1971-2020 / 1991-2020 Normals
